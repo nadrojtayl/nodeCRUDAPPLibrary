@@ -1,18 +1,28 @@
 "use strict";
+var os = require( 'os' );
+
+var networkInterfaces = os.networkInterfaces( ).en0[1].address.replace("Interfaces ","");
+
+console.log("Interfaces", networkInterfaces );
+
 var request = require("request");
 var fs = require("fs");
 class API{
-	constructor(name,url,getdata,postdata,gettransformer,posttransformer){
+	constructor(name,url,getdata,postdata,gettransformer,posttransformer,optionaladdress){
+		this.clientSideMethodHolder = {};
 		this.name = name;
 		this.url = url;
 		this.gettransformer = gettransformer;
 		this.posttransformer = posttransformer;
 		this.getdata = getdata; //data if you want to apppend an object, maybe including signature, to *all* get requests
+		this.optionaladdress = this.optionaladdress;
 	}
+
 	get(object,res){
 		request(this.url,function(err,response,body){
 			this.gettransformer && this.gettransformer(body);
 			console.log(err);
+			res.setHeader("Access-Control-Allow-Headers","x-requested-with");
 			res.send(body);
 		})
 	}
@@ -23,17 +33,21 @@ class API{
 }
 
 
-//var green = new API();
 
 class Connection{
-	constructor(app){
+	constructor(app,port){
 		this.app = app;
 		this.APIs = {};
+		this.clientMethods = {};
+		this.filePaths = {};
+		this.port = port;
 	}
 
 	addAPI(name,url,getdata,postdata,transformer){
 		var newAPI = new API(name,url,getdata,postdata,transformer);
 		this.APIs[newAPI.name] = newAPI;
+
+		this.clientMethods["get" + name] = createAjaxReq(url,name,this.port);
 		// console.log("APIs",this.APIs)
 
 		//connect to App
@@ -45,47 +59,32 @@ class Connection{
 			var body = req.body
 			newAPI.post(body,res)
 		}
+
+
 	}
 
 	sendFileWithData(path,res){
-		//console.log(path);
-		sendWithClientSideMethods(path,this.APIs,res)()
-	}
-
-}
-
-function sendWithClientSideMethods(path,APIobj,res){
-	var loadedfiles = {};
-	// console.log("PATH",path);
-	var path = path;
-	var APIobj = APIobj;
-	var res = res;
-	console.log(res);
-
-	return function(){
-		// console.log(path);
-		// console.log(APIobj);
-		//console.log(res);
-		if(loadedfiles[path]){
-			return loadedfiles[path]
+		var jquery = '<script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>'; 
+		var toinsert = "<script>var server =" + JSON.stringify(this.clientMethods) + ";for(var key in server){}</script>"
+		toinsert = jquery +  toinsert;
+		if(this.filePaths[path]){
+			var html = this.filePaths[path];
+		} else {	
+			var html = fs.readFileSync(path,"utf8");
+			this.filePaths[path] = html;
 		}
-		var html = fs.readFileSync(path,"utf8");
 		var index = html.indexOf("<head>") + 7;
-		var APInames = Object.keys(APIobj);
-		var helpers = {};
-		APInames.forEach(function(name){
-			helpers["get" + name] = createAjaxReq(APIobj[name].url,name)		
-		})
-		var toinsert = "<script>server =" + JSON.stringify(helpers) + " for (var key in server){server[key] = JSON.parse(server[key])}</script>"
+		//console.log(path);
 		html = html.slice(0,index) + toinsert + html.slice(index)
 		res.send(html);
-		console.log(typeof html);
 	}
 
 }
 
-function createAjaxReq(url,name){
-	return "function(){var data = ''; $.ajax({url:"+url+",async:false,success:function(data){data = data})}";
+
+function createAjaxReq(url,name,port){
+	var url = networkInterfaces + ":" + port + "/get" + name; 
+	return "function(){var data = ''; $.ajax({url:'"+url+"',async:false,success:function(data){data = data})}";
 }
 
 

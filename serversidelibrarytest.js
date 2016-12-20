@@ -8,6 +8,7 @@ var url = "sventrepreneurs";
 var api = "https://api.meetup.com/2/events?&sign=true&status=upcoming&photo-host=public&group_urlname=" + url + "&key=5c2f87e243c3b2b547f5a14701370a"
 
 APIHandler.addAPI("Events",api);
+APIHandler.addAPI("Google","http://www.google.com");
 
 
 

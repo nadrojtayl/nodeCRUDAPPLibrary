@@ -1,12 +1,13 @@
 "use strict";
-var os = require( 'os' );
 
+//determine ip address of this computer on network
+var os = require( 'os' );
 var networkInterfaces = os.networkInterfaces( ).en0[1].address.replace("Interfaces ","");
 
-console.log("Interfaces", networkInterfaces );
-
+//import request and fs
 var request = require("request");
 var fs = require("fs");
+
 class API{
 	constructor(name,url,getdata,postdata,gettransformer,posttransformer,optionaladdress){
 		this.clientSideMethodHolder = {};
@@ -23,6 +24,7 @@ class API{
 			this.gettransformer && this.gettransformer(body);
 			console.log(err);
 			res.setHeader("Access-Control-Allow-Headers","x-requested-with");
+			res.setHeader("Access-Control-Allow-Origin","http://localhost:3000");
 			res.send(body);
 		})
 	}
@@ -65,7 +67,7 @@ class Connection{
 
 	sendFileWithData(path,res){
 		var jquery = '<script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>'; 
-		var toinsert = "<script>var server =" + JSON.stringify(this.clientMethods) + ";for(var key in server){}</script>"
+		var toinsert = "<script>var server =" + JSON.stringify(this.clientMethods) + ";for(var key in server){server[key] = new Function(server[key])}</script>"
 		toinsert = jquery +  toinsert;
 		if(this.filePaths[path]){
 			var html = this.filePaths[path];
@@ -83,24 +85,24 @@ class Connection{
 
 
 function createAjaxReq(url,name,port){
-	var url = networkInterfaces + ":" + port + "/get" + name; 
-	return "function(){var data = ''; $.ajax({url:'"+url+"',async:false,success:function(data){data = data})}";
+	var url = "http://"+ networkInterfaces + ":" + port + "/get" + name; 
+	return "var data = ''; $.ajax({url:'"+url+"',async:false,success:function(returnData){data = returnData}}); return data;";
 }
 
 
 
-class DatabaseConnection{
-	constructor(app,mongooseInstance){
-		this.app = app;
-		this.mongooseInstance = mongooseInstance;
-	}
+// class DatabaseConnection{
+// 	constructor(app,mongooseInstance){
+// 		this.app = app;
+// 		this.mongooseInstance = mongooseInstance;
+// 	}
 
-	createSchema(summary){
-		var tomake = summary.split(";");
+// 	createSchema(summary){
+// 		var tomake = summary.split(";");
 
-	}
+// 	}
 
-}
+// }
 
 module.exports = Connection;
 

@@ -2,7 +2,7 @@
 
 //determine ip address of this computer on network
 var os = require( 'os' );
-var networkInterfaces = os.networkInterfaces( ).en0[1].address.replace("Interfaces ","");
+var ipAddress = os.networkInterfaces( ).en0[1].address.replace("Interfaces ","");
 
 //import request and fs
 var request = require("request");
@@ -19,12 +19,13 @@ class API{
 		this.optionaladdress = this.optionaladdress;
 	}
 
-	get(object,res){
-		request(this.url,function(err,response,body){
+	get(paramObject,res){
+		var params = parametrize(paramObject);
+		request(this.url + params,function(err,response,body){
 			this.gettransformer && this.gettransformer(body);
 			console.log(err);
 			res.setHeader("Access-Control-Allow-Headers","x-requested-with");
-			res.setHeader("Access-Control-Allow-Origin","http://localhost:3000");
+			res.setHeader("Access-Control-Allow-Origin","*");
 			res.send(body);
 		})
 	}
@@ -46,6 +47,9 @@ class Connection{
 	}
 
 	addAPI(name,url,getdata,postdata,transformer){
+		if(url.indexOf("?") === -1){
+			url = url + "?";
+		}
 		var newAPI = new API(name,url,getdata,postdata,transformer);
 		this.APIs[newAPI.name] = newAPI;
 
@@ -85,10 +89,20 @@ class Connection{
 
 
 function createAjaxReq(url,name,port){
-	var url = "http://"+ networkInterfaces + ":" + port + "/get" + name; 
+	var url = "http://"+ ipAddress + ":" + port + "/get" + name; 
 	return "var data = ''; $.ajax({url:'"+url+"',async:false,success:function(returnData){data = returnData}}); return data;";
 }
 
+function parametrize(obj){
+	var str = "";
+	for (var key in obj) {
+	    if (str != "") {
+	        str += "&";
+	    }
+	    str += key + "=" + encodeURIComponent(obj[key]);
+	}
+	return str;
+}
 
 module.exports = Connection;
 

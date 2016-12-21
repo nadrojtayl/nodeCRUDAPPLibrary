@@ -1,5 +1,5 @@
 var app = require("express")();
-var port = 8940;
+var port = 8975;
 var mongoose = require("mongoose");
 mongoose.connect('mongodb://localhost/test');
 var db = mongoose.connection;
@@ -10,7 +10,7 @@ var APIHandler = helper.APIHelper;
 var dbHelper = helper.addDBconnection(mongoose);
 
 
-dbHelper.createSchema({Message:{user:"Mike",message:"I want a dog"}},"Users have multiple messages");
+dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"}},"Users have multiple messages");
 
 
 console.log(dbHelper.helpers);
@@ -30,6 +30,10 @@ APIHandler.addAPI("Google","http://www.google.com");
 app.get("/",function(req,res){
 	//res.send("Here");
 	APIHandler.sendFileWithData(__dirname + "/test.html",res);
+})
+
+app.get("/dbtest",function(req,res){
+	dbHelper.sendFileWithDBMethods(__dirname + "/test.html",res);
 })
 
 app.listen(port)

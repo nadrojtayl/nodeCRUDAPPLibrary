@@ -90,19 +90,5 @@ function createAjaxReq(url,name,port){
 }
 
 
-
-// class DatabaseConnection{
-// 	constructor(app,mongooseInstance){
-// 		this.app = app;
-// 		this.mongooseInstance = mongooseInstance;
-// 	}
-
-// 	createSchema(summary){
-// 		var tomake = summary.split(";");
-
-// 	}
-
-// }
-
 module.exports = Connection;
 

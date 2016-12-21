@@ -6,20 +6,21 @@ var ipAddress = os.networkInterfaces( ).en0[1].address.replace("Interfaces ","")
 //import request and fs
 var request = require("request");
 var fs = require("fs");
+var bodyparser = require("body-parser");
 
 class DatabaseConnection{
 	constructor(app,port,mongooseInstance){
 		console.log("PORT IS",port);
 		this.app = app;
+		this.app.use(bodyparser.urlencoded({extended:true}))
+		this.app.use(bodyparser.json())
+		this.app.use(function(req,res,next){
+			console.log("MIDDLEWARE");
+			next();
+		})
 		this.port = port;
 		this.mongooseInstance = mongooseInstance;
 		this.entities = {};
-		this.jsTypestoMongoose = {
-			
-		}
-		this.endpointNames = {
-
-		}
 		this.helpers = [];
 		this.clientMethods ={};
 		this.filePaths = {};
@@ -27,7 +28,7 @@ class DatabaseConnection{
 
 	sendFileWithDBMethods(path,res){
 		var jquery = '<script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>'; 
-		var toinsert = "<script>var db =" + JSON.stringify(this.clientMethods) + ";for(var key in db){db[key] = new Function(db[key])}</script>"
+		var toinsert = "<script>var db =" + JSON.stringify(this.clientMethods) + ";for(var key in db){db[key] = new Function('data',db[key])}</script>"
 		toinsert = jquery + toinsert;
 		if(this.filePaths[path]){
 			var html = this.filePaths[path];
@@ -87,7 +88,7 @@ class DatabaseConnection{
 			this.app.get("/getAll" + modelName + "s",function(req,res){
 				that.helpers["get"+ "All" + modelName + "s"](function(data){
 					res.setHeader("Access-Control-Allow-Headers","x-requested-with");
-					res.setHeader("Access-Control-Allow-Origin","http://localhost:3000");
+					res.setHeader("Access-Control-Allow-Origin","*");
 					res.end(data);
 				})
 
@@ -106,12 +107,18 @@ class DatabaseConnection{
 			}
 
 			this.app.get("/getSpecific" + modelName,function(req,res){
+				console.log(req.body);
+				console.log(req.query);
+				res.setHeader("Access-Control-Allow-Headers","x-requested-with");
+				res.setHeader("Access-Control-Allow-Origin","*");
 				var model = req.body.lookingfor;
 				that.helpers["get" + "Specific" + modelName](model,function(data){
 					res.end(data);
 				})
 
 			})
+
+			this.clientMethods["/getSpecific" + modelName] = createDBAjaxReq("/getSpecific" + modelName,this.port);
 
 			this.helpers["post"+ modelName] = function(model,cb){
 				//make it only post if its already there
@@ -139,12 +146,18 @@ class DatabaseConnection{
 			}
 
 			this.app.post("/add"+ modelName,function(req,res){
-				var model = req.body.lookingfor;
+				res.setHeader("Access-Control-Allow-Headers","x-requested-with");
+				res.setHeader("Access-Control-Allow-Origin","*");
+				console.log(req.body);
+				var model = req.body;
 				that.helpers["post" + modelName](model,function(data){
 					res.end(data);
 				})
 
 			})
+
+			this.clientMethods["/add" + modelName] = createDBAjaxReq("/add" + modelName,this.port,"post");
+
 
 			this.helpers["update" + modelName]= function(model,change,cb){
 				that.entities[modelName].findOneAndUpdate(model,change,{},function(err,doc){
@@ -192,9 +205,12 @@ function Objectmap(obj,cb){
 
 }
 
-function createDBAjaxReq(name,port){
+function createDBAjaxReq(name,port,method){
+	if(!method){method = "'get'"}
+	else {method = "'" + method + "'"}
+
 	var url = "http://"+ ipAddress + ":" + port + name; 
-	return "var data = ''; $.ajax({url:'"+url+"',async:false,success:function(returnData){data = returnData}}); return data;";
+	return "console.log(data); var toReturn = ''; $.ajax({type:" + method + ",url:'"+url+"',async:false,success:function(returnData){toReturn = returnData},failure:function(err){console.log(err)},data:data}); return toReturn;";
 }
 
 module.exports = DatabaseConnection

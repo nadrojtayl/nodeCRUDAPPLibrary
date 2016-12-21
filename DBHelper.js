@@ -34,7 +34,7 @@ class DatabaseConnection{
 					cb(JSON.stringify(models))
 				})
 			}
-			console.log("getAll" + modelName + "s");
+			console.log(this.app);
 
 			this.app.get("/getAll" + modelName + "s",function(req,res){
 				that.helpers["get"+ "All" + modelName + "s"](function(data){

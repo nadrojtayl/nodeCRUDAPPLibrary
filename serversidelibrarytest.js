@@ -14,9 +14,15 @@ dbHelper.createSchema({Message:{user:"Mike",message:"I want a dog"}},"Users have
 // })
 
 //console.log(dbHelper.helpers);
-dbHelper.helpers.postMessage({user:"Mike"},function(data){
+// dbHelper.helpers.postMessage({user:"Mike","message":"I am your leader"},function(data){
+// 	console.log(data);
+// })
+
+dbHelper.helpers.deleteMessage({user:"Mike","message":"this is new"},function(data){
 	console.log(data);
 })
+
+
 
 //fix this so you don't need the new keyword
 var APIHandler = new APIHandler(app,port);
@@ -34,4 +40,4 @@ app.get("/",function(req,res){
 	APIHandler.sendFileWithData(__dirname + "/test.html",res);
 })
 
-app.listen(8905)
+app.listen(8916)

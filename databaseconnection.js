@@ -93,25 +93,37 @@ class DatabaseConnection{
 
 			})
 
+			this.helpers["update" + modelName]= function(model,change,cb){
+				that.entities[modelName].findOneAndUpdate(model,change,{},function(err,doc){
+					if(err){cb(err)} else {
+						cb("Updated!");
+					}
+				})
+			}
+
 			this.app.put(modelName,function(req,res){
 				var model = req.body.lookingfor;
 				var change = req.body.change;
-				this.entities[modelName].findOneAndUpdate(model,change,{},function(err,doc){
-					if(err){res.end(err)} else {
-						res.end("Updated!");
-					}
+				that.helpers["update" + modelName](model,change,function(data){
+					res.end(data);
 				})
 
 			})
 
+			this.helpers["delete" + modelName] = function(model,cb){
+				that.entities[modelName].findOneAndRemove(model,{},function(err,doc){
+					if(err){
+						cb(err);
+					} else {
+						cb("Deleted" + JSON.stringify(doc));
+					}
+				})
+			}
+
 			this.app.delete(modelName,function(req,res){
 				var model = req.body.lookingfor;
-				this.entities[modelName].findOneAndRemove(model,{},function(err,doc){
-					if(err){
-						res.end(err);
-					} else {
-						res.end("Deleted" + JSON.stringify(doc));
-					}
+				that.helpers["delete" + modelName](model,function(data){
+					res.end(data);
 				})
 			})
 

@@ -34,8 +34,9 @@ class DatabaseConnection{
 					cb(JSON.stringify(models))
 				})
 			}
+			console.log("getAll" + modelName + "s");
 
-			this.app.get("All" + modelName + "s",function(req,res){
+			this.app.get("/getAll" + modelName + "s",function(req,res){
 				that.helpers["get"+ "All" + modelName + "s"](function(data){
 					res.end(data);
 				})
@@ -52,7 +53,7 @@ class DatabaseConnection{
 				})
 			}
 
-			this.app.get("specific" + modelName,function(req,res){
+			this.app.get("/getSpecific" + modelName,function(req,res){
 				var model = req.body.lookingfor;
 				that.helpers["get" + "Specific" + modelName](model,function(data){
 					res.end(data);
@@ -85,7 +86,7 @@ class DatabaseConnection{
 				});
 			}
 
-			this.app.post(modelName,function(req,res){
+			this.app.post("/add"+ modelName,function(req,res){
 				var model = req.body.lookingfor;
 				that.helpers["post" + modelName](model,function(data){
 					res.end(data);
@@ -101,7 +102,7 @@ class DatabaseConnection{
 				})
 			}
 
-			this.app.put(modelName,function(req,res){
+			this.app.put("/update" + modelName,function(req,res){
 				var model = req.body.lookingfor;
 				var change = req.body.change;
 				that.helpers["update" + modelName](model,change,function(data){
@@ -120,7 +121,7 @@ class DatabaseConnection{
 				})
 			}
 
-			this.app.delete(modelName,function(req,res){
+			this.app.delete("/delte" + modelName,function(req,res){
 				var model = req.body.lookingfor;
 				that.helpers["delete" + modelName](model,function(data){
 					res.end(data);

@@ -26,40 +26,68 @@ class DatabaseConnection{
 			
 			this.entities[key] = this.mongooseInstance.model(key,new Schema(givenEntities[key]));
 		}
-		console.log(this.entities)
+		//console.log(this.entities)
 		for(var modelName in this.entities){
-			this.helpers["get"+ "all" + modelName + "s"] = function(cb){
-					this.entities[modelName].find({}).exec(function(err,models){
-						cb(JSON.stringify(models))
-					})
+			var that = this;
+			this.helpers["get"+ "All" + modelName + "s"] = function(cb){
+				that.entities[modelName].find({}).exec(function(err,models){
+					cb(JSON.stringify(models))
+				})
 			}
 
-			this.app.get("all" + modelName + "s",function(req,res){
-				this.helpers["get"+ "all" + modelName + "s"](function(data){
+			this.app.get("All" + modelName + "s",function(req,res){
+				that.helpers["get"+ "All" + modelName + "s"](function(data){
 					res.end(data);
 				})
 
 			})
 			
+			this.helpers["get" + "Specific" + modelName] = function(model,cb){
+				that.entities[modelName].find(model).exec(function(err,models){
+					if(err){
+						cb(err);
+					} else {
+						cb(JSON.stringify(models))
+					}
+				})
+			}
 
 			this.app.get("specific" + modelName,function(req,res){
 				var model = req.body.lookingfor;
-				//return specified model 
+				that.helpers["get" + "Specific" + modelName](model,function(data){
+					res.end(data);
+				})
 
 			})
 
 			this.helpers["post"+ modelName] = function(model,cb){
-				this.entities[modelName].create(model,function(err,data){
-					if(err){toReturn = err} else {
-						toReturn = JSON.stringify(data);
+				//make it only post if its already there
+				that.entities[modelName].find(model).exec(function(err,returnedModel){
+					if(err){
+						cb(err);
+					} else {
+						if(returnedModel.length>0){
+							cb("That record was already there!")
+						} else {
+							console.log(model);
+							that.entities[modelName].create(model,function(err,data){
+								console.log(data);
+								var toReturn;
+								if(err){toReturn = err} else {
+									toReturn = JSON.stringify(data);
+								}
+								cb(toReturn)
+							})
+
+						}
 					}
-					cb(toReturn)
-				})
+
+				});
 			}
 
 			this.app.post(modelName,function(req,res){
 				var model = req.body.lookingfor;
-				this.helpers["post" + modelName](model,function(data){
+				that.helpers["post" + modelName](model,function(data){
 					res.end(data);
 				})
 

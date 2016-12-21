@@ -7,7 +7,16 @@ var db = mongoose.connection;
 var dbHelper = require(__dirname + "/databaseconnection.js");
 dbHelper = new dbHelper(app,mongoose)
 
-dbHelper.createSchema({Message:{user:"Jordan",message:"I want a dog"}},"Users have multiple messages");
+dbHelper.createSchema({Message:{user:"Mike",message:"I want a dog"}},"Users have multiple messages");
+
+//dbHelper.helpers.postMessage({user:"Jordan",message:"test"},function(data){
+// 	console.log(data);
+// })
+
+//console.log(dbHelper.helpers);
+dbHelper.helpers.postMessage({user:"Mike"},function(data){
+	console.log(data);
+})
 
 //fix this so you don't need the new keyword
 var APIHandler = new APIHandler(app,port);
@@ -25,4 +34,4 @@ app.get("/",function(req,res){
 	APIHandler.sendFileWithData(__dirname + "/test.html",res);
 })
 
-app.listen(4000)
+app.listen(8905)

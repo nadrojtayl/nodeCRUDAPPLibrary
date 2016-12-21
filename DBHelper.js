@@ -121,7 +121,7 @@ class DatabaseConnection{
 				})
 			}
 
-			this.app.delete("/delte" + modelName,function(req,res){
+			this.app.delete("/delete" + modelName,function(req,res){
 				var model = req.body.lookingfor;
 				that.helpers["delete" + modelName](model,function(data){
 					res.end(data);

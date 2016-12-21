@@ -107,8 +107,6 @@ class DatabaseConnection{
 			}
 
 			this.app.get("/getSpecific" + modelName,function(req,res){
-				console.log(req.body);
-				console.log(req.query);
 				res.setHeader("Access-Control-Allow-Headers","x-requested-with");
 				res.setHeader("Access-Control-Allow-Origin","*");
 				var model = req.body.lookingfor;
@@ -129,7 +127,6 @@ class DatabaseConnection{
 						if(returnedModel.length>0){
 							cb("That record was already there!")
 						} else {
-							console.log(model);
 							that.entities[modelName].create(model,function(err,data){
 								console.log(data);
 								var toReturn;
@@ -148,7 +145,6 @@ class DatabaseConnection{
 			this.app.post("/add"+ modelName,function(req,res){
 				res.setHeader("Access-Control-Allow-Headers","x-requested-with");
 				res.setHeader("Access-Control-Allow-Origin","*");
-				console.log(req.body);
 				var model = req.body;
 				that.helpers["post" + modelName](model,function(data){
 					res.end(data);
@@ -167,14 +163,21 @@ class DatabaseConnection{
 				})
 			}
 
-			this.app.put("/update" + modelName,function(req,res){
-				var model = req.body.lookingfor;
+			this.app.post("/update" + modelName,function(req,res){
+				console.log("UPDATED");
+				res.setHeader("Access-Control-Allow-Headers","x-requested-with");
+				res.setHeader("Access-Control-Allow-Origin","*");
+				var model = req.body.find;
 				var change = req.body.change;
+				console.log(model);
+				console.log(change)
 				that.helpers["update" + modelName](model,change,function(data){
 					res.end(data);
 				})
 
 			})
+
+			this.clientMethods["/update" + modelName] = createDBAjaxReq("/update" + modelName,this.port,"post");
 
 			this.helpers["delete" + modelName] = function(model,cb){
 				that.entities[modelName].findOneAndRemove(model,{},function(err,doc){
@@ -186,12 +189,18 @@ class DatabaseConnection{
 				})
 			}
 
-			this.app.delete("/delete" + modelName,function(req,res){
-				var model = req.body.lookingfor;
+			this.app.post("/delete" + modelName,function(req,res){
+				console.log("DELETED");
+				res.setHeader("Access-Control-Allow-Headers","x-requested-with");
+				res.setHeader("Access-Control-Allow-Origin","*");
+				var model = req.body;
 				that.helpers["delete" + modelName](model,function(data){
 					res.end(data);
 				})
 			})
+
+			this.clientMethods["/delete" + modelName] = createDBAjaxReq("/delete" + modelName,this.port,"post");
+
 
 		}
 	}

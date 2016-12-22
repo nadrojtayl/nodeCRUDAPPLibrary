@@ -21,6 +21,7 @@ class API{
 
 	get(paramObject,res){
 		var params = parametrize(paramObject);
+		console.log(this.url + params);
 		request(this.url + params,function(err,response,body){
 			this.gettransformer && this.gettransformer(body);
 			console.log(err);
@@ -57,7 +58,7 @@ class Connection{
 		// console.log("APIs",this.APIs)
 
 		//connect to App
-		this.app.get("/get" + name,function(req,res){
+		this.app.post("/get" + name,function(req,res){
 			var body = req.body;
 			newAPI.get(body,res)
 		})
@@ -71,7 +72,7 @@ class Connection{
 
 	sendFileWithData(path,res){
 		var jquery = '<script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>'; 
-		var toinsert = "<script>var server =" + JSON.stringify(this.clientMethods) + ";for(var key in server){server[key] = new Function(server[key])}</script>"
+		var toinsert = "<script>var server =" + JSON.stringify(this.clientMethods) + ";for(var key in server){server[key] = new Function('params',server[key])}</script>"
 		toinsert = jquery +  toinsert;
 		if(this.filePaths[path]){
 			var html = this.filePaths[path];
@@ -90,7 +91,7 @@ class Connection{
 
 function createAjaxReq(url,name,port){
 	var url = "http://"+ ipAddress + ":" + port + "/get" + name; 
-	return "var data = ''; $.ajax({url:'"+url+"',async:false,success:function(returnData){data = returnData}}); return data;";
+	return "var data = ''; $.ajax({type:'post',url:'"+url+"',async:false,success:function(returnData){data = returnData},data:params}); return data;";
 }
 
 function parametrize(obj){
@@ -101,7 +102,7 @@ function parametrize(obj){
 	    }
 	    str += key + "=" + encodeURIComponent(obj[key]);
 	}
-	return str;
+	return "&" + str;
 }
 
 module.exports = Connection;

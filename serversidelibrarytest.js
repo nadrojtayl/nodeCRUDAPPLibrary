@@ -1,5 +1,5 @@
 var app = require("express")();
-var port = 9029;
+var port = 9034;
 var mongoose = require("mongoose");
 mongoose.connect('mongodb://localhost/test');
 var db = mongoose.connection;
@@ -20,7 +20,7 @@ dbHelper.helpers.postMessage({user:"Mikael","message":"this is new"},function(da
 
 
 var url = "sventrepreneurs";
-var api = "https://api.meetup.com/2/events?&sign=true&status=upcoming&photo-host=public&group_urlname=" + url + "&key=5c2f87e243c3b2b547f5a14701370a"
+var api = "https://api.meetup.com/2/events?&sign=true&status=upcoming&photo-host=public" + "&key=5c2f87e243c3b2b547f5a14701370a"
 
 APIHandler.addAPI("Events",api);
 APIHandler.addAPI("Google","http://www.google.com");

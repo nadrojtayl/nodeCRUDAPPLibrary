@@ -1,7 +1,8 @@
 "use strict";
 
-var os = require( 'os' );
-var ipAddress = os.networkInterfaces( ).en0[1].address.replace("Interfaces ","");
+//determine ip address of this computer on network
+//you also have the option of enetering own IP as argument
+var ipAddress = require(__dirname + "/findIPAddress")
 
 //import request and fs
 var request = require("request");
@@ -9,21 +10,18 @@ var fs = require("fs");
 var bodyparser = require("body-parser");
 
 class DatabaseConnection{
-	constructor(app,port,mongooseInstance){
+	constructor(app,port,mongooseInstance,ipAddress){
 		console.log("PORT IS",port);
 		this.app = app;
 		this.app.use(bodyparser.urlencoded({extended:true}))
 		this.app.use(bodyparser.json())
-		this.app.use(function(req,res,next){
-			console.log("MIDDLEWARE");
-			next();
-		})
 		this.port = port;
 		this.mongooseInstance = mongooseInstance;
 		this.entities = {};
 		this.helpers = [];
 		this.clientMethods ={};
 		this.filePaths = {};
+		this.ipAddress = ipAddress;
 	}
 
 	sendFileWithDBMethods(path,res){
@@ -94,7 +92,7 @@ class DatabaseConnection{
 
 			})
 
-			this.clientMethods["/getAll" + modelName + "s"] = createDBAjaxReq("/getAll" + modelName + "s",this.port);
+			this.clientMethods["/getAll" + modelName + "s"] = createDBAjaxReq("/getAll" + modelName + "s",this.port,"get",this.ipAddress);
 			
 			this.helpers["get" + "Specific" + modelName] = function(model,cb){
 				that.entities[modelName].find(model).exec(function(err,models){
@@ -116,7 +114,7 @@ class DatabaseConnection{
 
 			})
 
-			this.clientMethods["/getSpecific" + modelName] = createDBAjaxReq("/getSpecific" + modelName,this.port,"post");
+			this.clientMethods["/getSpecific" + modelName] = createDBAjaxReq("/getSpecific" + modelName,this.port,"post",this.ipAddress);
 
 			this.helpers["post"+ modelName] = function(model,cb){
 				//make it only post if its already there
@@ -152,7 +150,7 @@ class DatabaseConnection{
 
 			})
 
-			this.clientMethods["/add" + modelName] = createDBAjaxReq("/add" + modelName,this.port,"post");
+			this.clientMethods["/add" + modelName] = createDBAjaxReq("/add" + modelName,this.port,"post",this.ipAddress);
 
 
 			this.helpers["update" + modelName]= function(model,change,cb){
@@ -177,7 +175,7 @@ class DatabaseConnection{
 
 			})
 
-			this.clientMethods["/update" + modelName] = createDBAjaxReq("/update" + modelName,this.port,"post");
+			this.clientMethods["/update" + modelName] = createDBAjaxReq("/update" + modelName,this.port,"post",this.ipAddress);
 
 			this.helpers["delete" + modelName] = function(model,cb){
 				that.entities[modelName].findOneAndRemove(model,{},function(err,doc){
@@ -199,7 +197,7 @@ class DatabaseConnection{
 				})
 			})
 
-			this.clientMethods["/delete" + modelName] = createDBAjaxReq("/delete" + modelName,this.port,"post");
+			this.clientMethods["/delete" + modelName] = createDBAjaxReq("/delete" + modelName,this.port,"post",this.ipAddress);
 
 
 		}
@@ -214,7 +212,7 @@ function Objectmap(obj,cb){
 
 }
 
-function createDBAjaxReq(name,port,method){
+function createDBAjaxReq(name,port,method,ipAddress){
 	if(!method){method = "'get'"}
 	else {method = "'" + method + "'"}
 

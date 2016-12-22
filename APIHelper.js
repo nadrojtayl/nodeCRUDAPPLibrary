@@ -1,22 +1,21 @@
 "use strict";
 
 //determine ip address of this computer on network
-var os = require( 'os' );
-var ipAddress = os.networkInterfaces( ).en0[1].address.replace("Interfaces ","");
+//you also have the option of enetering own IP as argument
+var ipAddress = require(__dirname + "/findIPAddress")
 
 //import request and fs
 var request = require("request");
 var fs = require("fs");
 
 class API{
-	constructor(name,url,getdata,postdata,gettransformer,posttransformer,optionaladdress){
+	constructor(name,url,getdata,postdata,gettransformer,posttransformer){
 		this.clientSideMethodHolder = {};
 		this.name = name;
 		this.url = url;
 		this.gettransformer = gettransformer;
 		this.posttransformer = posttransformer;
 		this.getdata = getdata; //data if you want to apppend an object, maybe including signature, to *all* get requests
-		this.optionaladdress = this.optionaladdress;
 	}
 
 	get(paramObject,res){
@@ -39,12 +38,13 @@ class API{
 
 
 class Connection{
-	constructor(app,port){
+	constructor(app,port,ipAddress){
 		this.app = app;
 		this.APIs = {};
 		this.clientMethods = {};
 		this.filePaths = {};
 		this.port = port;
+		this.ipAddress = ipAddress;
 	}
 
 	addAPI(name,url,getdata,postdata,transformer){
@@ -54,7 +54,7 @@ class Connection{
 		var newAPI = new API(name,url,getdata,postdata,transformer);
 		this.APIs[newAPI.name] = newAPI;
 
-		this.clientMethods["get" + name] = createAjaxReq(url,name,this.port);
+		this.clientMethods["get" + name] = createAjaxReq(url,name,this.port,this.ipAddress);
 		// console.log("APIs",this.APIs)
 
 		//connect to App
@@ -89,7 +89,7 @@ class Connection{
 }
 
 
-function createAjaxReq(url,name,port){
+function createAjaxReq(url,name,port,ipAddress){
 	var url = "http://"+ ipAddress + ":" + port + "/get" + name; 
 	return "var data = ''; $.ajax({type:'post',url:'"+url+"',async:false,success:function(returnData){data = returnData},data:params}); return data;";
 }

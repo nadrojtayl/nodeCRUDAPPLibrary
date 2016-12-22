@@ -5,6 +5,7 @@
 
 //import request and fs
 var bodyparser = require("body-parser");
+var fs = require("fs");
 
 class API{
 	constructor(name,url,getdata,postdata,gettransformer,posttransformer){

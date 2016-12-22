@@ -106,17 +106,17 @@ class DatabaseConnection{
 				})
 			}
 
-			this.app.get("/getSpecific" + modelName,function(req,res){
+			this.app.post("/getSpecific" + modelName,function(req,res){
 				res.setHeader("Access-Control-Allow-Headers","x-requested-with");
 				res.setHeader("Access-Control-Allow-Origin","*");
-				var model = req.body.lookingfor;
+				var model = req.body;
 				that.helpers["get" + "Specific" + modelName](model,function(data){
 					res.end(data);
 				})
 
 			})
 
-			this.clientMethods["/getSpecific" + modelName] = createDBAjaxReq("/getSpecific" + modelName,this.port);
+			this.clientMethods["/getSpecific" + modelName] = createDBAjaxReq("/getSpecific" + modelName,this.port,"post");
 
 			this.helpers["post"+ modelName] = function(model,cb){
 				//make it only post if its already there

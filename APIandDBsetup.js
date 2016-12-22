@@ -1,5 +1,8 @@
 "use strict";
 var autoipAddress = require(__dirname + "/findIPAddress")
+var request = require("request");
+var fs = require("fs");
+var bodyparser = require("body-parser");
 
 class APIandDBHelper{
 	constructor(app,port,ipAddress){

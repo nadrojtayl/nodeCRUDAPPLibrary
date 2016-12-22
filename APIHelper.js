@@ -2,11 +2,9 @@
 
 //determine ip address of this computer on network
 //you also have the option of enetering own IP as argument
-var ipAddress = require(__dirname + "/findIPAddress")
 
 //import request and fs
-var request = require("request");
-var fs = require("fs");
+var bodyparser = require("body-parser");
 
 class API{
 	constructor(name,url,getdata,postdata,gettransformer,posttransformer){

@@ -2,12 +2,10 @@
 
 //determine ip address of this computer on network
 //you also have the option of enetering own IP as argument
-var ipAddress = require(__dirname + "/findIPAddress")
 
 //import request and fs
-var request = require("request");
-var fs = require("fs");
 var bodyparser = require("body-parser");
+var fs = require("fs");
 
 class DatabaseConnection{
 	constructor(app,port,mongooseInstance,ipAddress){
@@ -57,7 +55,6 @@ class DatabaseConnection{
 				if(Array.isArray(ex)){
 					typeOfEntity = "[]";
 				}
-
 				typeOfEntity = typeof ex;
 
 				if(mongooseRelatable.indexOf(typeOfEntity) === -1){

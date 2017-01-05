@@ -1,3 +1,4 @@
+
 var app = require("express")();
 var port = 9038;
 var mongoose = require("mongoose");
@@ -10,7 +11,8 @@ var APIHandler = helper.APIHelper;
 var dbHelper = helper.addDBconnection(mongoose);
 
 
-dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},Dog:{legs:4}},"Users have multiple messages");
+
+dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}},{User:["Message"]});
 
 
 console.log(dbHelper.helpers);

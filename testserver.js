@@ -1,5 +1,10 @@
 var app = require("express")();
 var bp = require("body-parser");
+var request = require('request');
+
+request("http://localhost:9026/deleteMessage").then(function(data){
+	console.log(data);
+})
 
 app.use(bp.json());
 app.use(bp.urlencoded({extended:false}));

@@ -39,8 +39,8 @@ class DatabaseConnection{
 
 	}
 
-	createSchema(givenEntities,summary){
-		var tomake = summary.split(";");
+	createSchema(givenEntities,relationships){
+		
 		var Schema = this.mongooseInstance.Schema;
 		var givenEntitiesAllMongooseTranferrable = true;
 		var mongooseRelatable = ["string","number","boolean","Date","[]"];
@@ -62,9 +62,20 @@ class DatabaseConnection{
 				}
 
 				return typeOfEntity;
-			})	
-			this.entities[key] = this.mongooseInstance.model(key,new Schema(givenEntities[key]));
+			})
+
+			if(relationships[key]){
+				//console.log(relationships)
+				relationships[key].forEach(function(refName){
+					givenEntities[key][refName + "s"] = [{type: Schema.Types.ObjectId, ref: refName}]
+				})
+			}
+
+			var newSchema = new Schema(givenEntities[key]);
+			this.entities[key] = this.mongooseInstance.model(key,newSchema);
+			
 		}
+
 		if(!givenEntitiesAllMongooseTranferrable){
 			throw "Your example must only include types that can be instantiated in mongoose";
 		}
@@ -209,12 +220,16 @@ function Objectmap(obj,cb){
 
 }
 
+function createConnections(){
+
+}
+
 function createDBAjaxReq(name,port,method,ipAddress){
 	if(!method){method = "'get'"}
 	else {method = "'" + method + "'"}
 
 	var url = "http://"+ ipAddress + ":" + port + name; 
-	return "console.log(data); var toReturn = ''; $.ajax({type:" + method + ",url:'"+url+"',async:false,success:function(returnData){toReturn = returnData},failure:function(err){console.log(err)},data:data}); return toReturn;";
+	return "console.log(data); var toReturn = ''; $.ajax({type:" + method + ",url:'"+url+"',async:false,success:function(returnData){toReturn = JSON.parse(returnData)},failure:function(err){console.log(err)},data:data}); return toReturn;";
 }
 
 module.exports = DatabaseConnection

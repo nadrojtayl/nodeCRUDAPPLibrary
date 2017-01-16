@@ -10,16 +10,7 @@ helper = new helper(app,port);
 var APIHandler = helper.APIHelper;
 var dbHelper = helper.addDBconnection(mongoose);
 
-
-dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},User:{name:"Jordan"}});
-// dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}},{User:["Message"]});
-
-dbHelper.helpers.getAllMessages(function(data){
-	console.log(data);
-});
-//dbHelper.helpers.testUsers();
-
- // dbHelper.entities["User"].find({}).exec(function(err,model){console.log(model);})
+dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}},{User:["Message"]});
 
 var url = "sventrepreneurs";
 var api = "https://api.meetup.com/2/events?&sign=true&status=upcoming&photo-host=public" + "&key=5c2f87e243c3b2b547f5a14701370a"

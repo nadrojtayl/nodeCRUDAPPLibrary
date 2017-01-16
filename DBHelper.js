@@ -64,7 +64,7 @@ class DatabaseConnection{
 				return typeOfEntity;
 			})
 
-			if(relationships[key]){
+			if(relationships && relationships[key]){
 				//console.log(relationships)
 				relationships[key].forEach(function(refName){
 					givenEntities[key][refName + "s"] = [{type: Schema.Types.ObjectId, ref: refName}]
@@ -79,138 +79,142 @@ class DatabaseConnection{
 		if(!givenEntitiesAllMongooseTranferrable){
 			throw "Your example must only include types that can be instantiated in mongoose";
 		}
-		//console.log(this.entities)
-		for(var modelName in this.entities){
-
+		//console.log("ENTITIES",Object.keys(this.entities));
+		for(var entity in this.entities){
 			var that = this;
+			var closure = function(){
+				var modelName = entity;
+				//var this = that;
+				that.helpers["get"+ "All" + modelName + "s"] = function(cb){
+					that.entities[modelName].find({}).exec(function(err,models){
+						//console.log(models);
+						cb(JSON.stringify(models))
+					})
+				}
 
-			this.helpers["get"+ "All" + modelName + "s"] = function(cb){
-				that.entities[modelName].find({}).exec(function(err,models){
-					cb(JSON.stringify(models))
+				
+
+				that.app.get("/getAll" + modelName + "s",function(req,res){
+					that.helpers["get"+ "All" + modelName + "s"](function(data){
+						res.setHeader("Access-Control-Allow-Headers","x-requested-with");
+						res.setHeader("Access-Control-Allow-Origin","*");
+						res.end(data);
+					})
+
 				})
-			}
-			
 
-			this.app.get("/getAll" + modelName + "s",function(req,res){
-				that.helpers["get"+ "All" + modelName + "s"](function(data){
+				that.clientMethods["/getAll" + modelName + "s"] = createDBAjaxReq("/getAll" + modelName + "s",that.port,"get",that.ipAddress);
+				
+				that.helpers["get" + "Specific" + modelName] = function(model,cb){
+					that.entities[modelName].find(model).exec(function(err,models){
+						if(err){
+							cb(err);
+						} else {
+							cb(JSON.stringify(models))
+						}
+					})
+				}
+
+				that.app.post("/getSpecific" + modelName,function(req,res){
 					res.setHeader("Access-Control-Allow-Headers","x-requested-with");
 					res.setHeader("Access-Control-Allow-Origin","*");
-					res.end(data);
+					var model = req.body;
+					that.helpers["get" + "Specific" + modelName](model,function(data){
+						res.end(data);
+					})
+
 				})
 
-			})
-
-			this.clientMethods["/getAll" + modelName + "s"] = createDBAjaxReq("/getAll" + modelName + "s",this.port,"get",this.ipAddress);
-			
-			this.helpers["get" + "Specific" + modelName] = function(model,cb){
-				that.entities[modelName].find(model).exec(function(err,models){
-					if(err){
-						cb(err);
-					} else {
-						cb(JSON.stringify(models))
-					}
-				})
-			}
-
-			this.app.post("/getSpecific" + modelName,function(req,res){
-				res.setHeader("Access-Control-Allow-Headers","x-requested-with");
-				res.setHeader("Access-Control-Allow-Origin","*");
-				var model = req.body;
-				that.helpers["get" + "Specific" + modelName](model,function(data){
-					res.end(data);
-				})
-
-			})
-
-			this.clientMethods["/getSpecific" + modelName] = createDBAjaxReq("/getSpecific" + modelName,this.port,"post",this.ipAddress);
-
-			this.helpers["post"+ modelName] = function(model,cb){
-				//make it only post if its already there
-				that.entities[modelName].find(model).exec(function(err,returnedModel){
-					if(err){
-						cb(err);
-					} else {
-						if(returnedModel.length>0){
-							cb("That record was already there!")
+				that.clientMethods["/getSpecific" + modelName] = createDBAjaxReq("/getSpecific" + modelName,that.port,"post",that.ipAddress);
+					
+				that.helpers["post"+ modelName] = function(model,cb){	
+					that.entities[modelName].find(model).exec(function(err,returnedModel){
+						if(err){
+							console.log(err);
+							cb(err);
 						} else {
-							that.entities[modelName].create(model,function(err,data){
-								console.log(data);
-								var toReturn;
-								if(err){toReturn = err} else {
-									toReturn = JSON.stringify(data);
-								}
-								cb(toReturn)
-							})
+							if(returnedModel.length>0){
+								cb("That record was already there!")
+							} else {
+								that.entities[modelName].create(model,function(err,data){
+									console.log(data);
+									var toReturn;
+									if(err){toReturn = err} else {
+										toReturn = JSON.stringify(data);
+									}
+									cb(toReturn)
+								})
 
+							}
 						}
-					}
 
-				});
+					});
+				}
+
+				that.app.post("/add"+ modelName,function(req,res){
+					res.setHeader("Access-Control-Allow-Headers","x-requested-with");
+					res.setHeader("Access-Control-Allow-Origin","*");
+					var model = req.body;
+					that.helpers["post" + modelName](model,function(data){
+						res.end(data);
+					})
+
+				})
+
+				that.clientMethods["/add" + modelName] = createDBAjaxReq("/add" + modelName,that.port,"post",that.ipAddress);
+
+
+				that.helpers["update" + modelName]= function(model,change,cb){
+					that.entities[modelName].findOneAndUpdate(model,change,{},function(err,doc){
+						if(err){cb(err)} else {
+							cb("Updated!");
+						}
+					})
+				}
+
+				that.app.post("/update" + modelName,function(req,res){
+					console.log("UPDATED");
+					res.setHeader("Access-Control-Allow-Headers","x-requested-with");
+					res.setHeader("Access-Control-Allow-Origin","*");
+					var model = req.body.find;
+					var change = req.body.change;
+					console.log(model);
+					console.log(change)
+					that.helpers["update" + modelName](model,change,function(data){
+						res.end(data);
+					})
+
+				})
+
+				that.clientMethods["/update" + modelName] = createDBAjaxReq("/update" + modelName,that.port,"post",that.ipAddress);
+
+				that.helpers["delete" + modelName] = function(model,cb){
+					that.entities[modelName].findOneAndRemove(model,{},function(err,doc){
+						if(err){
+							cb(err);
+						} else {
+							cb("Deleted" + JSON.stringify(doc));
+						}
+					})
+				}
+
+				that.app.post("/delete" + modelName,function(req,res){
+					console.log("DELETED");
+					res.setHeader("Access-Control-Allow-Headers","x-requested-with");
+					res.setHeader("Access-Control-Allow-Origin","*");
+					var model = req.body;
+					that.helpers["delete" + modelName](model,function(data){
+						res.end(data);
+					})
+				})
+
+				that.clientMethods["/delete" + modelName] = createDBAjaxReq("/delete" + modelName,that.port,"post",that.ipAddress);
+				// that.helpers["testMessage"]();
 			}
-
-			this.app.post("/add"+ modelName,function(req,res){
-				res.setHeader("Access-Control-Allow-Headers","x-requested-with");
-				res.setHeader("Access-Control-Allow-Origin","*");
-				var model = req.body;
-				that.helpers["post" + modelName](model,function(data){
-					res.end(data);
-				})
-
-			})
-
-			this.clientMethods["/add" + modelName] = createDBAjaxReq("/add" + modelName,this.port,"post",this.ipAddress);
-
-
-			this.helpers["update" + modelName]= function(model,change,cb){
-				that.entities[modelName].findOneAndUpdate(model,change,{},function(err,doc){
-					if(err){cb(err)} else {
-						cb("Updated!");
-					}
-				})
-			}
-
-			this.app.post("/update" + modelName,function(req,res){
-				console.log("UPDATED");
-				res.setHeader("Access-Control-Allow-Headers","x-requested-with");
-				res.setHeader("Access-Control-Allow-Origin","*");
-				var model = req.body.find;
-				var change = req.body.change;
-				console.log(model);
-				console.log(change)
-				that.helpers["update" + modelName](model,change,function(data){
-					res.end(data);
-				})
-
-			})
-
-			this.clientMethods["/update" + modelName] = createDBAjaxReq("/update" + modelName,this.port,"post",this.ipAddress);
-
-			this.helpers["delete" + modelName] = function(model,cb){
-				that.entities[modelName].findOneAndRemove(model,{},function(err,doc){
-					if(err){
-						cb(err);
-					} else {
-						cb("Deleted" + JSON.stringify(doc));
-					}
-				})
-			}
-
-			this.app.post("/delete" + modelName,function(req,res){
-				console.log("DELETED");
-				res.setHeader("Access-Control-Allow-Headers","x-requested-with");
-				res.setHeader("Access-Control-Allow-Origin","*");
-				var model = req.body;
-				that.helpers["delete" + modelName](model,function(data){
-					res.end(data);
-				})
-			})
-
-			this.clientMethods["/delete" + modelName] = createDBAjaxReq("/delete" + modelName,this.port,"post",this.ipAddress);
-
-
+			closure();
 		}
 	}
-
+	// this.helpers["testUsers"]();
 }
 
 function Objectmap(obj,cb){

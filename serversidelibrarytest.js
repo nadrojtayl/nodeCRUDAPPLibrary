@@ -2,7 +2,7 @@
 var app = require("express")();
 var port = 9038;
 var mongoose = require("mongoose");
-mongoose.connect('mongodb://localhost/test');
+mongoose.connect('mongodb://localhost/new');
 var db = mongoose.connection;
 
 var helper =  require(__dirname + "/APIandDBsetup.js");
@@ -11,15 +11,15 @@ var APIHandler = helper.APIHelper;
 var dbHelper = helper.addDBconnection(mongoose);
 
 
+dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},User:{name:"Jordan"}});
+// dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}},{User:["Message"]});
 
-dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}},{User:["Message"]});
-
-
-console.log(dbHelper.helpers);
-dbHelper.helpers.postMessage({user:"Mikael","message":"this is new"},function(data){
+dbHelper.helpers.getAllMessages(function(data){
 	console.log(data);
-})
+});
+//dbHelper.helpers.testUsers();
 
+ // dbHelper.entities["User"].find({}).exec(function(err,model){console.log(model);})
 
 var url = "sventrepreneurs";
 var api = "https://api.meetup.com/2/events?&sign=true&status=upcoming&photo-host=public" + "&key=5c2f87e243c3b2b547f5a14701370a"
@@ -30,7 +30,6 @@ APIHandler.addAPI("Google","http://www.google.com");
 
 
 app.get("/",function(req,res){
-	//res.send("Here");
 	APIHandler.sendFileWithData(__dirname + "/test.html",res);
 })
 

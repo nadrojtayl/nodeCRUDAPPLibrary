@@ -104,7 +104,7 @@ class DatabaseConnection{
 
 				})
 
-				that.clientMethods["/getAll" + modelName + "s"] = createDBAjaxReq("/getAll" + modelName + "s",that.port,"get",that.ipAddress);
+				that.clientMethods["getAll" + modelName + "s"] = createDBAjaxReq("/getAll" + modelName + "s",that.port,"get",that.ipAddress);
 				
 				that.helpers["get" + "Specific" + modelName] = function(model,cb){
 					that.entities[modelName].find(model).exec(function(err,models){
@@ -126,7 +126,7 @@ class DatabaseConnection{
 
 				})
 
-				that.clientMethods["/getSpecific" + modelName] = createDBAjaxReq("/getSpecific" + modelName,that.port,"post",that.ipAddress);
+				that.clientMethods["getSpecific" + modelName] = createDBAjaxReq("/getSpecific" + modelName,that.port,"post",that.ipAddress);
 					
 				that.helpers["post"+ modelName] = function(model,cb){	
 					that.entities[modelName].find(model).exec(function(err,returnedModel){
@@ -162,7 +162,7 @@ class DatabaseConnection{
 
 				})
 
-				that.clientMethods["/add" + modelName] = createDBAjaxReq("/add" + modelName,that.port,"post",that.ipAddress);
+				that.clientMethods["add" + modelName] = createDBAjaxReq("/add" + modelName,that.port,"post",that.ipAddress);
 
 
 				that.helpers["update" + modelName]= function(model,change,cb){
@@ -187,7 +187,7 @@ class DatabaseConnection{
 
 				})
 
-				that.clientMethods["/update" + modelName] = createDBAjaxReq("/update" + modelName,that.port,"post",that.ipAddress);
+				that.clientMethods["update" + modelName] = createDBAjaxReq("/update" + modelName,that.port,"post",that.ipAddress);
 
 				that.helpers["delete" + modelName] = function(model,cb){
 					that.entities[modelName].findOneAndRemove(model,{},function(err,doc){
@@ -210,7 +210,7 @@ class DatabaseConnection{
 					})
 				})
 
-				that.clientMethods["/delete" + modelName] = createDBAjaxReq("/delete" + modelName,that.port,"post",that.ipAddress);
+				that.clientMethods["delete" + modelName] = createDBAjaxReq("/delete" + modelName,that.port,"post",that.ipAddress);
 				// that.helpers["testMessage"]();
 			}
 			closure();

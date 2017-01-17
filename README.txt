@@ -1,9 +1,9 @@
 
 
 
-Superfast expressMongoapp: Set up a mongoDB schema and Express server that serves access to your DB models in a single line of code
-	-Builds schema
-	-Sets up endpoint
+Superfast expressMongoapp: Set up your mongoDB models and Express server that serves access to your DB models in a single line of code
+	-Builds models based on your schema
+	-Sets up endpoints on an Expres server to CRUD your
 	-Uses server side scripting to set up helpers that CRUD your new mongo entities client-side
 
 	-Example: BUILD OUT THE DB AND SERVER FOR A SOCIAL MEDIA APP WITH USERS AND MESSAGES
@@ -26,7 +26,7 @@ Superfast expressMongoapp: Set up a mongoDB schema and Express server that serve
 
 				-The method takes the html file as its first argument, and the response as its second
 
-			-In your html files, you have a helper to CRUD every entity you created. The helpers are on a globally defined object called DB
+			-In your html files, you have a helper to CRUD every entity you created. The helpers are on a globally defined object called "db"
 				-Example html code:
 				<html>
 				<head>
@@ -39,12 +39,16 @@ Superfast expressMongoapp: Set up a mongoDB schema and Express server that serve
 				<body>
 				</body>
 				</html>
+		-Focus on your client side code because DB and server setup is done
+		-Full list of available helpers for each model you create:
+			
 
 
 
 
 
-	FULL SET UP BELOW:
+
+	FULL SET UP INSTRUCTIONS BELOW:
 
 
 

@@ -28,4 +28,7 @@ app.get("/dbtest",function(req,res){
 	dbHelper.sendFileWithDBMethods(__dirname + "/test.html",res);
 })
 
+
+dbHelper.helpers["updateMessage"]({user:"Test",message:"Updated2"},{user:"Test",message:"Updated3"},function(data){console.log(data)});
+
 app.listen(port)

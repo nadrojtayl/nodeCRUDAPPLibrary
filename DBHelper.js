@@ -78,6 +78,16 @@ class DatabaseConnection{
 			var newSchema = new Schema(givenEntities[key]);
 			this.entities[key] = this.mongooseInstance.model(key,newSchema);
 		}
+		var inverseRelations = {};
+		for(var key in relationships){
+			relationships[key].forEach(function(subrelation){
+				if(!(subrelation in inverseRelations)){
+					inverseRelations[subrelation] = [key];
+				} else {
+					inverseRelations[subrelation].push(key);
+				}
+			})
+		}
 
 		if(!givenEntitiesAllMongooseTranferrable){
 			throw "Your example must only include types that can be instantiated in mongoose";
@@ -86,6 +96,42 @@ class DatabaseConnection{
 			var that = this;
 			var closure = function(){
 				var modelName = entity;
+
+
+				if(entity in inverseRelations){
+					var str = "";
+					inverseRelations[modelName].forEach(function(fkey,ind){
+						if(ind === 0){
+							str += (fkey);
+						} else {
+							str += ("&" + fkey);
+						}
+					})
+
+					that.helpers["add" + modelName + "for" + str] = function(fkeys,newDoc,cb){
+						var arr = Object.keys(fkeys), i = 0;
+						var ids = {};
+						recurse(cb,0);
+						function recurse(cb,i){
+							if(arr[i]){
+								that.entities[arr[i]].findOne(fkeys[arr[i]]).exec(function(err,data){
+									ids[arr[i]] = data._id;
+									recurse(cb,i+1);
+								})
+							} else {
+								for(var id in ids){
+									newDoc["_" + id] = ids[id];
+								}
+								var toSave = new that.entities[modelName](newDoc);
+								toSave.save(function(err,data){
+									cb(data);
+								})
+							}
+						}
+					}
+				}
+
+				
 				that.helpers["get"+ "All" + modelName + "s"] = function(cb){
 					console.log("modelName",modelName);
 					that.entities[modelName].find({}).exec(function(err,models){

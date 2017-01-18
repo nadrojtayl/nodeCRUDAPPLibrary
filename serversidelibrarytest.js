@@ -28,14 +28,15 @@ app.get("/dbtest",function(req,res){
 	dbHelper.sendFileWithDBMethods(__dirname + "/test.html",res);
 })
 
-dbHelper.entities.User.findOne({name:"Jordan"}).exec(function(err,data){
-	console.log("TYPEE",typeof data._id);
-	var message = new dbHelper.entities.Message({user:"Jordan",message:"Hey",_User: data._id});
-	message.save(function(err,data){
-		console.log("ERR",err);
-		console.log("DATA",data);
-	});
-})
+// dbHelper.entities.User.findOne({name:"Jordan"}).exec(function(err,data){
+// 	console.log("TYPEE",typeof data._id);
+// 	var message = new dbHelper.entities.Message({user:"Jordan",message:"Hey",_User: data._id});
+// 	message.save(function(err,data){
+// 		console.log("ERR",err);
+// 		console.log("DATA",data);
+// 	});
+// })
+dbHelper.helpers.addMessageforUser({User:{name:"Jordan"}},{user:"Jordan",message:"Sup"},function(data){console.log(data);});
 
 
 dbHelper.helpers["updateMessage"]({user:"Test",message:"Updated2"},{user:"Test",message:"Updated3"},function(data){console.log(data)});

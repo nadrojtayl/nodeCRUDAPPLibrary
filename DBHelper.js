@@ -129,6 +129,22 @@ class DatabaseConnection{
 							}
 						}
 					}
+
+					that.app.post("/add" + modelName + "for" + str,function(req,res){
+						res.setHeader("Access-Control-Allow-Headers","x-requested-with");
+						res.setHeader("Access-Control-Allow-Origin","*");
+						var info = req.body;
+						console.log(info);
+						//console.log(info);
+						var priors = req.body.relatedInfo;
+						var newDoc = req.body.toPost;
+						that.helpers["add" + modelName + "for" + str](priors,newDoc,function(data){
+							res.end(JSON.stringify(data));
+						})
+					});
+
+					that.clientMethods["add" + modelName + "for" + str] = createDBAjaxReq("/add" + modelName + "for" + str,that.port,"post",that.ipAddress);
+
 				}
 
 				

@@ -2,7 +2,7 @@
 var app = require("express")();
 var port = 9038;
 var mongoose = require("mongoose");
-mongoose.connect('mongodb://localhost/test2');
+mongoose.connect('mongodb://localhost/test3');
 var db = mongoose.connection;
 
 var helper =  require(__dirname + "/APIandDBsetup.js");
@@ -10,7 +10,7 @@ helper = new helper(app,port);
 var APIHandler = helper.APIHelper;
 var dbHelper = helper.addDBconnection(mongoose);
 
-dbHelper.createSchema({User:{name:"Mike"},Message:{user:"Mike",message:"I am a dog"}},{User:["Message"]});
+dbHelper.createSchema({User:{name:"Mike"},Message:{user:"Mike",message:"I am a dog"},subMessage:{name:"Brian",message:"This is a test"}},{User:["Message","subMessage"],Message:["subMessage"]});
 
 var url = "sventrepreneurs";
 var api = "https://api.meetup.com/2/events?&sign=true&status=upcoming&photo-host=public" + "&key=5c2f87e243c3b2b547f5a14701370a"
@@ -36,9 +36,12 @@ app.get("/dbtest",function(req,res){
 // 		console.log("DATA",data);
 // 	});
 // })
-dbHelper.helpers.addMessageforUser({User:{name:"Jordan"}},{user:"Jordan",message:"Sup"},function(data){console.log(data);});
+console.log(dbHelper.helpers);
 
+// dbHelper.helpers.addUser({name:"Jordan"},function(data){console.log(data)});
+//  dbHelper.helpers.addMessageforUser({User:{name:"Jordan"}},{user:"Jordan",message:"Test"},function(data){
+//  	console.log(data);
+//  });
 
-dbHelper.helpers["updateMessage"]({user:"Test",message:"Updated2"},{user:"Test",message:"Updated3"},function(data){console.log(data)});
-
+dbHelper.helpers["addsubMessageforUserandMessage"]({User:{name:"Jordan"},Message:{message:"Test"}},{name:"Jordan",message:"Testsub"},function(d){console.log(d)});
 app.listen(port)

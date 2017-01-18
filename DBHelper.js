@@ -104,7 +104,7 @@ class DatabaseConnection{
 						if(ind === 0){
 							str += (fkey);
 						} else {
-							str += ("&" + fkey);
+							str += ("and" + fkey);
 						}
 					})
 
@@ -175,7 +175,7 @@ class DatabaseConnection{
 
 				that.clientMethods["getSpecific" + modelName] = createDBAjaxReq("/getSpecific" + modelName,that.port,"post",that.ipAddress);
 					
-				that.helpers["post"+ modelName] = function(model,cb){	
+				that.helpers["add"+ modelName] = function(model,cb){	
 					that.entities[modelName].find(model).exec(function(err,returnedModel){
 						if(err){
 							console.log(err);
@@ -203,7 +203,7 @@ class DatabaseConnection{
 					res.setHeader("Access-Control-Allow-Headers","x-requested-with");
 					res.setHeader("Access-Control-Allow-Origin","*");
 					var model = req.body;
-					that.helpers["post" + modelName](model,function(data){
+					that.helpers["add" + modelName](model,function(data){
 						res.end(data);
 					})
 

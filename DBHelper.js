@@ -6,6 +6,7 @@
 //import request and fs
 var bodyparser = require("body-parser");
 var fs = require("fs");
+var mongoose = require("mongoose");
 
 class DatabaseConnection{
 	constructor(app,port,mongooseInstance,ipAddress){
@@ -43,10 +44,8 @@ class DatabaseConnection{
 		
 		var Schema = this.mongooseInstance.Schema;
 		var givenEntitiesAllMongooseTranferrable = true;
-		var mongooseRelatable = ["string","number","boolean","Date","[]"];
+		var mongooseRelatable = ["string","number","boolean","Date","[]","object"];
 		for(var key in givenEntities){
-			//givenEntities[key] = givenEntities[key];
-			//var obj = givenEntities[key]
 			Objectmap(givenEntities[key],function(ex){
 				var typeOfEntity;
 				if(ex.constructor === Date){
@@ -58,33 +57,35 @@ class DatabaseConnection{
 				typeOfEntity = typeof ex;
 
 				if(mongooseRelatable.indexOf(typeOfEntity) === -1){
+					console.log(typeOfEntity);
 					givenEntitiesAllMongooseTranferrable = false;
 				}
 
 				return typeOfEntity;
 			})
+			
+		}
 
+		for(var key in givenEntities){
 			if(relationships && relationships[key]){
-				//console.log(relationships)
 				relationships[key].forEach(function(refName){
+					console.log("key",key);
+					console.log("refName",refName)
 					givenEntities[key][refName + "s"] = [{type: Schema.Types.ObjectId, ref: refName}]
+					givenEntities[refName]["_" + key] = {type: mongoose.Schema.Types.ObjectId, ref: key,required:true }
 				})
 			}
-
 			var newSchema = new Schema(givenEntities[key]);
 			this.entities[key] = this.mongooseInstance.model(key,newSchema);
-			
 		}
 
 		if(!givenEntitiesAllMongooseTranferrable){
 			throw "Your example must only include types that can be instantiated in mongoose";
 		}
-		//console.log("ENTITIES",Object.keys(this.entities));
 		for(var entity in this.entities){
 			var that = this;
 			var closure = function(){
 				var modelName = entity;
-				//var this = that;
 				that.helpers["get"+ "All" + modelName + "s"] = function(cb){
 					console.log("modelName",modelName);
 					that.entities[modelName].find({}).exec(function(err,models){
@@ -135,7 +136,7 @@ class DatabaseConnection{
 							cb(err);
 						} else {
 							if(returnedModel.length>0){
-								cb("That record was already there!")
+								cb(JSON.stringify(["That record was already there!"]));
 							} else {
 								that.entities[modelName].create(model,function(err,data){
 									console.log(data);
@@ -143,7 +144,7 @@ class DatabaseConnection{
 									if(err){toReturn = err} else {
 										toReturn = JSON.stringify(data);
 									}
-									cb(toReturn)
+									cb(JSON.stringify(toReturn));
 								})
 
 							}

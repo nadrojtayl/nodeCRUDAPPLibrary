@@ -2,7 +2,7 @@
 var app = require("express")();
 var port = 9038;
 var mongoose = require("mongoose");
-mongoose.connect('mongodb://localhost/new');
+mongoose.connect('mongodb://localhost/test2');
 var db = mongoose.connection;
 
 var helper =  require(__dirname + "/APIandDBsetup.js");
@@ -10,7 +10,7 @@ helper = new helper(app,port);
 var APIHandler = helper.APIHelper;
 var dbHelper = helper.addDBconnection(mongoose);
 
-dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}},{User:["Message"]});
+dbHelper.createSchema({User:{name:"Mike"},Message:{user:"Mike",message:"I am a dog"}},{User:["Message"]});
 
 var url = "sventrepreneurs";
 var api = "https://api.meetup.com/2/events?&sign=true&status=upcoming&photo-host=public" + "&key=5c2f87e243c3b2b547f5a14701370a"
@@ -26,6 +26,15 @@ app.get("/",function(req,res){
 
 app.get("/dbtest",function(req,res){
 	dbHelper.sendFileWithDBMethods(__dirname + "/test.html",res);
+})
+
+dbHelper.entities.User.findOne({name:"Jordan"}).exec(function(err,data){
+	console.log("TYPEE",typeof data._id);
+	var message = new dbHelper.entities.Message({user:"Jordan",message:"Hey",_User: data._id});
+	message.save(function(err,data){
+		console.log("ERR",err);
+		console.log("DATA",data);
+	});
 })
 
 

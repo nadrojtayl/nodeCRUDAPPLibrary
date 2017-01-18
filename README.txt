@@ -1,7 +1,9 @@
+!!!!
 
+SUPERFASTMONGOEXPRESS: Abstracts all the boilerplate needed to set up an express-mongo server into a single line of code
 
-
-Superfast expressMongoapp: Set up your mongoDB models and an Express server that serves access to your models in a single line of code
+!!!!!
+superfastmongoexpress: Set up your mongoDB models and an Express server that serves access to your models in a single line of code
 	-Builds models based on a simple example of the schema you want
 	-Sets up endpoints on an Expres server to CRUD your
 	-Uses server side scripting to set up helpers that CRUD your new mongo entities client-side
@@ -94,7 +96,7 @@ Superfast expressMongoapp: Set up your mongoDB models and an Express server that
 
 		dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}},{User:["Message"]});
 
-	This will use mongoose to insert an array onto each User that holds the id of Messages that User posted. You just need to remember to insert the id of each message that User posts into the User array.
+	This will use mongoose to insert an array onto each User, set up to hold the ids of Messages posted by that User. You just need to remember to insert the id of each message that User posts into the User array.
 
 
 
@@ -124,7 +126,7 @@ Superfast expressMongoapp: Set up your mongoDB models and an Express server that
 		</html>
 
 	You could also put this in a button to allow your user to send a message:
-	html>
+	<html>
 		<head>
 			
 		</head>

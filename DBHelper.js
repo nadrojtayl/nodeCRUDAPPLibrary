@@ -23,6 +23,10 @@ class DatabaseConnection{
 		this.ipAddress = ipAddress;
 	}
 
+	printHelpers(){
+		console.log(Object.keys(this.clientMethods));
+	}
+
 	sendFileWithDBMethods(path,res){
 		var jquery = '<script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>'; 
 		var toinsert = "<script>var db =" + JSON.stringify(this.clientMethods) + ";for(var key in db){db[key] = new Function('data',db[key])}</script>"
@@ -277,6 +281,7 @@ class DatabaseConnection{
 				// that.helpers["testMessage"]();
 			}
 			closure();
+
 		}
 	}
 	// this.helpers["testUsers"]();

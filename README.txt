@@ -202,3 +202,61 @@ Superfastmongoexpress sets up your mongoDB tables and an Express server that ser
 			 	(Ex: updateUser(find:{name:"Jerry"},change:{name:"Bob"})))
 
 	INSERTING TO TABLES WITH FOREIGN KEYS
+
+			If you specified a table as having a many to one relationship to another table, the library provides you an extra helper for that test to add a new document to that table while specifying what documents in other tables it should be associated with. For example, if you created a Messages table for messages posted by Users, you need a way to post your Messages while specifiying what User is posting it.
+
+			This method is called "db.add[tableName]for[relatedTableName]"
+
+			For the example above, if you created a Users table and a Messages table, the function to add a Message for a certain User would be called
+			db.addMessageforUser
+
+			The function takes as an argument an object with two keys:
+
+			relatedInfo: An object whose keys are the names of the tables your table is related to (for example "User") and whose values are objects representing the document in that table you want to associate your new document with
+
+			toPost: An object representing the new document to add to the table
+
+			So, for example, to post a new Message to the Messages table associated with the User Ben, you do:
+
+			<script>
+				var rf = {User:{name:"Jordan"}}
+				var newmodel = {user:"Jordan",message:"This is an example"};
+
+				db.addMessageforUser({relatedInfo:rf,toPost:newModel});
+			</script>
+
+			If the table is related to more than one table, than the method is called db.add[tableName]for[relatedTable1]and[relatedTable2]and[relatedTable3]...
+
+			So, if you have a subMessage table, where each subMessage is associated with a certain User and a Message, the client side function to add a subMessage is called.
+
+			db.addsubMessageforUserandMessage
+
+			And to add a submessage you could run this code
+
+			<script>
+				var relatedUser = {User:{name:"Jordan"}}
+				var relatedMessage = {user:"Jordan",message:"This is the main message"}
+				var newsubComment = {user:"Jordan",message:"This is an example"};
+
+				db.addsubMessageforUserandMessage({
+					relatedInfo{User:relatedUser,Message:relatedMessage},
+					toPost:newsubComment
+				})
+			</script>
+
+			To get all the documents in a table related to a document in another table,	you need to get the mongoID (always called _id) of the document from one table using the getSpecific[tableName] function, and then get all the documents from another table that have that ID as their _[tableName] property.	
+
+			For example, to get all the Messages a specific User posted, you would:
+
+			1)Find that user's ID using getSpecificUser
+
+				//ex: db.getSpecificUser({name:Jordan}) -> [{name:Jordan,_id:"1234"}];
+				// var id = db.getSpecificUser({name:Jordan})._id;
+
+			2)Use getSpecificMessage to find Messages who's _User property matches that id
+
+			//db.getSpecificMessage({_User:id}) -> All messages posted by Jordan
+
+			Documents in a table in a many to one relationship with another table--for example "relatedTable" will always have a property called _[relatedTableName]. That's what you use to filter for documents related to certain other documents for a table.
+
+			For example, if you have an ingredients table where each ingredient is related to a recipe, the recipe ID will be stored on a property called _Recipe. So to find all the ingredients in a certain Recipe you would use the same process as above, but you would getSpecificIngredient and check if _Recipe matched the id of the recipe whose ingredients you were looking for, not _User

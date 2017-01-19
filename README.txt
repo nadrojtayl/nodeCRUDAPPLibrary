@@ -257,6 +257,110 @@ Superfastmongoexpress sets up your mongoDB tables and an Express server that ser
 
 			//db.getSpecificMessage({_User:id}) -> All messages posted by Jordan
 
-			Documents in a table in a many to one relationship with another table--for example "relatedTable" will always have a property called _[relatedTableName]. That's what you use to filter for documents related to certain other documents for a table.
+			Documents in a table in a many to one relationship with another table--for example "relatedTable" will always have a property called _[relatedTableName]. That's what you use to filter for documents related to a specific document in the relatedTable.
 
-			For example, if you have an ingredients table where each ingredient is related to a recipe, the recipe ID will be stored on a property called _Recipe. So to find all the ingredients in a certain Recipe you would use the same process as above, but you would getSpecificIngredient and check if _Recipe matched the id of the recipe whose ingredients you were looking for, not _User
+			For example, if you have an ingredients table where each ingredient is related to a recipe, the recipe ID will be stored on a property called _Recipe on each ingredient. So to find all the ingredients in a certain Recipe you would use the same process as above, but you would getSpecificIngredient and check if _Recipe matched the id of the recipe whose ingredients you were looking for, not _User
+
+			At any point, from your express side code you can run the printHelper method to see all the helpers that will be available to you on the client side
+
+				Example:
+				var mongoose = require("mongoose");
+				mongoose.connect('mongodb://localhost/test3');
+				var db = mongoose.connection;
+
+				var helper =  require(__dirname + "/APIandDBsetup.js");
+				helper = new helper(app,port);
+				var APIHandler = helper.APIHelper;
+				var dbHelper = helper.addDBconnection(mongoose);
+				dbHelper.printHelpers();
+				//the above will print all the helpers
+
+			//EXAMPLE OF CLIENT SIDE AND SERVER SIDE CODE TO SET UP CHAT MESSAGING APP USING HYPERFAST MONGO
+
+			**express server side code
+
+				var app = require("express")();
+				var port = 9038;
+
+				var mongoose = require("mongoose");
+
+				mongoose.connect('mongodb://localhost/test3');
+
+				var db = mongoose.connection;
+
+				var helper =  require("superfastmongoexpress");
+
+				helper = new helper(app,port);
+
+				var dbHelper = helper.addDBconnection(mongoose);
+
+				dbHelper.createSchema(
+					{
+						User:{name:"Mike"},
+						Message:{user:"Mike",message:"I am a dog"},
+						subMessage:{name:"Brian",message:"This is a test"}
+					},
+					{
+						User:["Message","subMessage"],
+						Message:["subMessage"]
+					}
+				);
+
+				app.listen(port);
+
+
+			**html code
+
+			<html>
+				<head>
+					<script
+				  src="https://code.jquery.com/jquery-3.1.1.js"
+				  integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+				  crossorigin="anonymous"></script>
+				  <script>
+
+				  </script>
+				</head>
+				<body>
+					<div>
+						<label>Select User</label>
+						<select id ="selector">
+						</select>
+					</div>
+					<div>
+						<label> Send Message </label>
+						<input type="text" id="message"></input>
+						<button onclick = "send()">Send</button>
+						<div id="messageHolder"></div>
+						<button onclick = "refresh()">Refresh Messages</button>
+					</div>
+					<script>
+						
+						//the code block below uses getAllUsers to append all users to a dropdown list so that the user can select what user they want to post as
+						db.getAllUsers().forEach(function(user){
+							var userContainer = $("#selector");
+							var newOpt = $("<option></option>")
+
+							userContainer.append("<option val ="+ user.name + ">"+user.name+ "</option>")
+						})
+
+						//the 'send' function below uses the addMessageforUser helper function to add a new message for the selected user into the database
+						function send(){
+							var user = $("#selector").val();
+							var messagetext = $("#message").val();
+							db.addMessageforUser({relatedInfo:{User:{name:user}},toPost:{user:user,message:messagetext}});
+						}
+
+						//the 'refresh' function uses the getAllMessages function to get All the messages in the database
+						//uses jquery to append to a div on the page
+						function refresh(){
+							var messagecontainer = $("#messageHolder")
+							messagecontainer.empty();
+							db.getAllMessages().forEach(function(messageObj){
+								var toAdd = $("<p>"+ messageObj.user+" :"+ messageObj.message + "</p>")
+								messagecontainer.append(toAdd);
+							})
+						}
+					</script>
+				</body>
+				</html>

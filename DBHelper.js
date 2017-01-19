@@ -61,7 +61,6 @@ class DatabaseConnection{
 				typeOfEntity = typeof ex;
 
 				if(mongooseRelatable.indexOf(typeOfEntity) === -1){
-					console.log(typeOfEntity);
 					givenEntitiesAllMongooseTranferrable = false;
 				}
 
@@ -73,8 +72,6 @@ class DatabaseConnection{
 		for(var key in givenEntities){
 			if(relationships && relationships[key]){
 				relationships[key].forEach(function(refName){
-					console.log("key",key);
-					console.log("refName",refName)
 					givenEntities[key][refName + "s"] = [{type: Schema.Types.ObjectId, ref: refName}]
 					givenEntities[refName]["_" + key] = {type: mongoose.Schema.Types.ObjectId, ref: key,required:true }
 				})
@@ -138,7 +135,6 @@ class DatabaseConnection{
 						res.setHeader("Access-Control-Allow-Headers","x-requested-with");
 						res.setHeader("Access-Control-Allow-Origin","*");
 						var info = req.body;
-						console.log(info);
 						//console.log(info);
 						var priors = req.body.relatedInfo;
 						var newDoc = req.body.toPost;
@@ -153,7 +149,6 @@ class DatabaseConnection{
 
 				
 				that.helpers["get"+ "All" + modelName + "s"] = function(cb){
-					console.log("modelName",modelName);
 					that.entities[modelName].find({}).exec(function(err,models){
 						//console.log(models);
 						cb(JSON.stringify(models))
@@ -241,13 +236,10 @@ class DatabaseConnection{
 				}
 
 				that.app.post("/update" + modelName,function(req,res){
-					console.log("UPDATED");
 					res.setHeader("Access-Control-Allow-Headers","x-requested-with");
 					res.setHeader("Access-Control-Allow-Origin","*");
 					var model = req.body.find;
 					var change = req.body.change;
-					console.log("BODY",req.body);
-					console.log(change)
 					that.helpers["update" + modelName](model,change,function(data){
 						res.end(data);
 					})
@@ -261,14 +253,12 @@ class DatabaseConnection{
 						if(err){
 							cb(err);
 						} else {
-							console.log(typeof doc);
 							cb(JSON.stringify(doc));
 						}
 					})
 				}
 
 				that.app.post("/delete" + modelName,function(req,res){
-					console.log("DELETED");
 					res.setHeader("Access-Control-Allow-Headers","x-requested-with");
 					res.setHeader("Access-Control-Allow-Origin","*");
 					var model = req.body;

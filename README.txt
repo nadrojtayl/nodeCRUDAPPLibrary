@@ -1,11 +1,11 @@
 !!!!
 
-SUPERFASTMONGOEXPRESS: Abstracts all the boilerplate needed to set up an express-mongo server into a single line of code
+SUPERFASTMONGOEXPRESS: Abstract all the boilerplate needed to set up an express-mongo server into a single line of code
 
 !!!!!
-superfastmongoexpress: Set up your mongoDB models and an Express server that serves access to your models in a single line of code
-	-Builds models based on a simple example of the schema you want
-	-Sets up endpoints on an Expres server to CRUD your
+Superfastmongoexpress sets up your mongoDB tables and an Express server that serves access to your tables in a single line of code
+	-Builds models based on a simple schema definition
+	-Sets up endpoints on an Express server to CRUD all your tables
 	-Uses server side scripting to set up helpers that CRUD your new mongo entities client-side
 
 	-Example: BUILD OUT THE DB AND SERVER FOR A SOCIAL MEDIA APP WITH USERS AND MESSAGES
@@ -25,6 +25,7 @@ superfastmongoexpress: Set up your mongoDB models and an Express server that ser
 					dbHelper.sendFileWithDBMethods(__dirname + "/test.html",res);
 				})
 
+
 				-The method takes the html file as its first argument, and the response as its second
 
 			-In your html files, you now have a helper to CRUD every entity you created. The helpers are on a globally defined object called "db"
@@ -42,6 +43,7 @@ superfastmongoexpress: Set up your mongoDB models and an Express server that ser
 				</body>
 				</html>
 		-Focus on your client side code because DB and server setup is done
+
 		-Here's the full list of all client-side helpers available to you (Replace "modelName" with the name of any of the models you created during schema setup):
 
 			db.addmodelName(object) -> adds document to table 
@@ -57,6 +59,7 @@ superfastmongoexpress: Set up your mongoDB models and an Express server that ser
 			
 
 	LONGER INSTRUCTIONS:
+		**Note** If you want to know how to add foreign keys or relationships between tables, skip to the foreign keys section on line 95
 
 
 -Many applications use an express server and Mongoose to do the simple action of allowing CRUD operations (CREATE READ UPDATE DELETE) on models in your database. This library gets rid of all the boilerplate.
@@ -90,27 +93,67 @@ superfastmongoexpress: Set up your mongoDB models and an Express server that ser
 			User:{name:"Brian"}
 		});
 
-	Use the (optional) second argument to createSchema to establish relationships between your tables. Input an object, where each key is the name of a table, and each value is an array containing the names of the other tables you want it to have a connection to.
+	FOREIGN KEYS: Use the (optional) second argument to createSchema to establish relationships between your tables. You do not need to specify foreignkeys or relationships in the first argument. For the second argument, input an object, where each key is the name of a table, and each value is an array containing the names of the other tables you want it to have a one to many connection to.
 
-	For example, if you want each Message to contain an ID for the user who wrote the message, create your schema like this:
+	For example, if your app has Users and messages, each User probably has many Messages. You may want to establish a relationship between the User and Messages table so you can easily find all messages from a certain User. In Mongoose, you accomplish this by putting a foreign key on each message that represents the id of the User that posted the message.
 
-		dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}},{User:["Message"]});
+	Its very easy to accomplish this using this library. If you want each Message to contain an ID for the user who wrote the message, create your schema like this:
 
-	This will use mongoose to insert an array onto each User, set up to hold the ids of Messages posted by that User. You just need to remember to insert the id of each message that User posts into the User array.
+		var schema = {Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}};
+		var relationships = {User:["Message"]}
 
+		dbHelper.createSchema(schema,relationships);
 
+	As stated, in the relationships object, make a key for every table that you want to have a one to many relationship with another table. The value for that key should be an array containing the names, as strings, of all tables that the key table should have a relationship to.
+
+	If you wanted users to be able to post submessages in response to messages, you might make your schema like this.
+
+	var schema = {
+		Message:{user:"Mike",message:"I am a dog"},
+		User:{name:"Mike"},
+		subMessage:{message:"This is a sub-comment"}
+	};
+
+	var relationships = {
+		User:["Message","subMessage"],
+		Message:["subMessage"]
+	}
+
+	dbHelper.createSchema(schema,relationships);
+
+	This way each submessage will have reference to both the User who posted it and the message it is under.
+
+	See below to see how to post documents to tables that have relationships to other tables.
 
 	7)That's it. When you run your server, the helper will create your schema, and create endpoints to Create, Read, Update and Delete the documents in each table you created. 
 
-	To make your database entities available to your client side code, serve files in your express app with the db.sendFileWithDBMethods method. This will provide access in your html to each of the CRUD helpers:
+	You can also serve files in your express app using the db.sendFileWithDBMethods method to make manipulating your database from your client side code extremely easy. 
 
-	Example:
+	**
+	 When you serve your files using db.sendFileWithDBMethods, you will have access in your html code to a set of helpers that-- for each of your new tables-- will CREATE, READ, UPDATE AND DELETE documents in that table**:
 
-		app.get("/dbtest",function(req,res){
-			dbHelper.sendFileWithDBMethods(__dirname + "/test.html",res);
+	Example of serving a file using sendFileWithDBMethods:
+		var dbHelper = require("superfastmongoapp")
+		var mongoose = require("mongoose");
+		mongoose.connect('mongodb://localhost/test3');
+		var dbHelper = helper.addDBconnection(mongoose);
+		var schema = {
+			User:{name:"Mike"},
+			Message:{user:"Mike",message:"I am a dog"},
+			subMessage:{name:"Brian",message:"This is a test"
+		};
+		var relationships = {User:["Message","subMessage"],Message:["subMessage"]};
+
+		dbHelper.createSchema(schema,relationships);
+
+
+		app.get("/",function(req,res){
+			dbHelper.sendFileWithDBMethods(__dirname + "/homepage.html",res);
 		})
 
-	Then, in test.html, you could use code like this to add a user:
+	The secndFileWithDBMethods function takes the absolute path to an html file as its first argument, and the response as its second.
+
+	Then, in test.html, you will have access to a bunch of helper functions on an object called "db" to CRUD every document in your table. For example, to add Messages to your database, you could write client code like this:
 
 		<html>
 			<head>
@@ -125,7 +168,7 @@ superfastmongoexpress: Set up your mongoDB models and an Express server that ser
 			</body>
 		</html>
 
-	You could also put this in a button to allow your user to send a message:
+	You could do something like this to allow your user to send a message by entering text in an input and clicking a button:
 	<html>
 		<head>
 			
@@ -145,15 +188,17 @@ superfastmongoexpress: Set up your mongoDB models and an Express server that ser
 		</body>
 	</html>
 
-	Here's the full list of helper functions. They're all on a global object called "db":
+	In your html files, the helpers for each table will be available on an object called "db." Here's the full list of helper functions. You will have one of these function for each table (replace [tableName] with the name of your table) you created:
 
-			db.addmodelName(object) -> adds document to table 
+			db.add[tableName](object) -> adds document to table 
 				(Ex: addUser({name:"Jerry"}))
-			db.deletemodelName(object) -> deletes document from table 
+			db.delete[tableName](object) -> deletes document from table 
 		   		(Ex: deleteUser({name:"Jerry"}))
-			db.getAllmodelNames() -> gets all documents from table 
+			db.getAll[tableName]s() -> gets all documents from table 
 				(Ex: getAllUsers())
-			db.getSpecificmodelName(object) -> gets documents matching object from table
+			db.getSpecific[tableName](object) -> gets documents matching object from table
 				(Ex: getSpecificUser({name:"Jerry"}))
-			db.updatemodelName(object with properties 'find' and 'change') -> updates single document matching object assigned to "find" to match object assigned to "change"
+			db.update[tableName](object with properties 'find' and 'change') -> updates single document matching object assigned to "find" to match object assigned to "change"
 			 	(Ex: updateUser(find:{name:"Jerry"},change:{name:"Bob"})))
+
+	INSERTING TO TABLES WITH FOREIGN KEYS

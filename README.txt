@@ -270,7 +270,6 @@ Superfastmongoexpress sets up your mongoDB tables and an Express server that ser
 
 				var helper =  require(__dirname + "/APIandDBsetup.js");
 				helper = new helper(app,port);
-				var APIHandler = helper.APIHelper;
 				var dbHelper = helper.addDBconnection(mongoose);
 				dbHelper.printHelpers();
 				//the above will print all the helpers
@@ -305,6 +304,10 @@ Superfastmongoexpress sets up your mongoDB tables and an Express server that ser
 						Message:["subMessage"]
 					}
 				);
+
+				app.get("/",function(req,res){
+					dbHelper.sendFileWithDBMethods(__dirname + "/test.html",res);
+				})
 
 				app.listen(port);
 

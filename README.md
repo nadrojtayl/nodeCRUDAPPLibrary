@@ -6,55 +6,63 @@
 
 ###Example: BUILD OUT THE DB AND SERVER FOR A SOCIAL MEDIA APP WITH USERS AND MESSAGES
 	Require the library:
-	```javascript -var dbHelper = require("superfastmongoapp")'''
+	     -var dbHelper = require("superfastmongoapp")'''
 	Set up the schema by calling the createSchema method
-	-dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}},{User:["Message"]});
-	-The first argument to schema should be an object. Keys are the names of tables you want created, values are examples of the kinds of objects that table should hold
-	-To create a User table with a name column you would run dbHelper.createSchema({User:{name:"Bobby"}})
+	     dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}},{User:["Message"]});
+
+	(The first argument to schema should be an object. Keys are the names of tables you want created, values are examples of the kinds of objects that table should hold)
+
+	To create a User table with a name column you would run 
+	     dbHelper.createSchema({User:{name:"Bobby"}})
+
 	Your server will automatically have endpoints that CREATE READ UPDATE and DELETE the models you created
-	-Make a get request to the endpoint /getAllMessages to get all messages from your server
-	-Make a post request to the endpoint /getSpecificMessage to get a specific Message
+
+	     -Make a get request to the endpoint /getAllMessages to get all messages from your server
+
+	     -Make a post request to the endpoint /getSpecificMessage to get a specific Message
+
 	-Any html files you serve from your server with the "sendFilewithDBMethods" method on the helper automatically has helper functions available to CRUD any endpoints:
-	-Example: In your express server, serve all files in response to requests with the sendFileWithDBMethods method
 
-app.get("/dbtest",function(req,res){
-	dbHelper.sendFileWithDBMethods(__dirname + "/test.html",res);
-})
+	     Example: In your express server, serve all files in response to requests with the sendFileWithDBMethods method
+
+         app.get("/dbtest",function(req,res){
+	       dbHelper.sendFileWithDBMethods(__dirname + "/test.html",res);
+         })
+
+         The method takes the html file as its first argument, and the response as its second
+
+     In your html files, you now have a helper to CRUD every entity you created. The helpers are on a globally defined object called "db"
+         Example html code to add a message from the client side:
+		<html>
+		<head>
+			<script>
+			    db.addMessage({user:Ben,message:"This is an example"})
+			    //The above code posts to your db
+			    db.getAllMessages({});
+			    //This will return all the messages that have been posted
+			<script>
+		</head>
+		<body>
+		</body>
+		</html>
+
+	 Focus on your client side code because DB and server setup is done
+
+     Here's the full list of all client-side helpers available to you (Replace "modelName" with the name of any of the models you created during schema setup):
+
+			db.addmodelName(object) -> adds document to table 
+			(Ex: addUser({name:"Jerry"}))
+			db.deletemodelName(object) -> deletes document from table 
+				(Ex: deleteUser({name:"Jerry"}))
+			db.getAllmodelNames() -> gets all documents from table 
+			(Ex: getAllUsers())
+			db.getSpecificmodelName(object) -> gets documents matching object from table
+			(Ex: getSpecificUser({name:"Jerry"}))
+			db.updatemodelName(object with properties 'find' and 'change') -> updates single document matching object assigned to "find" to match object assigned to "change"
+				(Ex: updateUser(find:{name:"Jerry"},change:{name:"Bob"})))
 
 
--The method takes the html file as its first argument, and the response as its second
-
--In your html files, you now have a helper to CRUD every entity you created. The helpers are on a globally defined object called "db"
--Example html code to add a message from the client side:
-<html>
-<head>
-	<script>
-	    db.addMessage({user:Ben,message:"This is an example"})
-	    //The above code posts to your db
-	    db.getAllMessages({});
-	    //This will return all the messages that have been posted
-	<script>
-</head>
-<body>
-</body>
-</html>
--Focus on your client side code because DB and server setup is done
-
--Here's the full list of all client-side helpers available to you (Replace "modelName" with the name of any of the models you created during schema setup):
-
-db.addmodelName(object) -> adds document to table 
-(Ex: addUser({name:"Jerry"}))
-db.deletemodelName(object) -> deletes document from table 
-	(Ex: deleteUser({name:"Jerry"}))
-db.getAllmodelNames() -> gets all documents from table 
-(Ex: getAllUsers())
-db.getSpecificmodelName(object) -> gets documents matching object from table
-(Ex: getSpecificUser({name:"Jerry"}))
-db.updatemodelName(object with properties 'find' and 'change') -> updates single document matching object assigned to "find" to match object assigned to "change"
-	(Ex: updateUser(find:{name:"Jerry"},change:{name:"Bob"})))
-
-
-LONGER INSTRUCTIONS:
+##LONGER INSTRUCTIONS:
 **Note** If you want to know how to add foreign keys or relationships between tables, skip to the foreign keys section on line 95
 
 

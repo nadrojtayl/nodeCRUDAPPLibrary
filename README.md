@@ -7,6 +7,7 @@
 ###Example: BUILD OUT THE DB AND SERVER FOR A SOCIAL MEDIA APP WITH USERS AND MESSAGES
 
 Require the library:
+
 ```js
 -var dbHelper = require("superfastmongoapp")
 ```

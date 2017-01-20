@@ -1,8 +1,8 @@
 
-Superfastmongoexpress sets up your mongoDB tables--and an Express server that lets you manipulate the documents in your tables from your html code-- in a single line of Express code
-	-Builds tables based on a simple schema definition
-	-Sets up endpoints on an Express server to CRUD the documents in your tables
-	-Uses server side scripting to set up helpers that CRUD your new mongo entities client-side
+###Superfastmongoexpress sets up your mongoDB tables--and an Express server that lets you manipulate the documents in your tables from your html code-- in a single line of Express code
+	1. Builds tables based on a simple schema definition
+	2. Sets up endpoints on an Express server to CRUD the documents in your tables
+	3. Uses server side scripting to set up helpers that CRUD your new mongo entities client-side
 
 	Example: BUILD OUT THE DB AND SERVER FOR A SOCIAL MEDIA APP WITH USERS AND MESSAGES
 		-Require the library:

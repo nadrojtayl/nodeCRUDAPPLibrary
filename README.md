@@ -4,7 +4,7 @@ Superfastmongoexpress sets up your mongoDB tables--and an Express server that le
 	-Sets up endpoints on an Express server to CRUD the documents in your tables
 	-Uses server side scripting to set up helpers that CRUD your new mongo entities client-side
 
-	-Example: BUILD OUT THE DB AND SERVER FOR A SOCIAL MEDIA APP WITH USERS AND MESSAGES
+	Example: BUILD OUT THE DB AND SERVER FOR A SOCIAL MEDIA APP WITH USERS AND MESSAGES
 		-Require the library:
 			-var dbHelper = require("superfastmongoapp")
 		-Set up the schema by calling the createSchema method

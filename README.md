@@ -6,7 +6,7 @@
 
 ###Example: BUILD OUT THE DB AND SERVER FOR A SOCIAL MEDIA APP WITH USERS AND MESSAGES
 	Require the library:
-	'-var dbHelper = require("superfastmongoapp")'
+	```javascript -var dbHelper = require("superfastmongoapp")'''
 	Set up the schema by calling the createSchema method
 	-dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}},{User:["Message"]});
 	-The first argument to schema should be an object. Keys are the names of tables you want created, values are examples of the kinds of objects that table should hold

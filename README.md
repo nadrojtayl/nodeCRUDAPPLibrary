@@ -4,18 +4,18 @@
 2. Sets up endpoints on an Express server to CRUD the documents in your tables
 3. Uses server side scripting to set up helpers that CRUD your new mongo entities client-side
 
-Example: BUILD OUT THE DB AND SERVER FOR A SOCIAL MEDIA APP WITH USERS AND MESSAGES
-Require the library:
--var dbHelper = require("superfastmongoapp")
-Set up the schema by calling the createSchema method
--dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}},{User:["Message"]});
--The first argument to schema should be an object. Keys are the names of tables you want created, values are examples of the kinds of objects that table should hold
--To create a User table with a name column you would run dbHelper.createSchema({User:{name:"Bobby"}})
-Your server will automatically have endpoints that CREATE READ UPDATE and DELETE the models you created
--Make a get request to the endpoint /getAllMessages to get all messages from your server
--Make a post request to the endpoint /getSpecificMessage to get a specific Message
--Any html files you serve from your server with the "sendFilewithDBMethods" method on the helper automatically has helper functions available to CRUD any endpoints:
--Example: In your express server, serve all files in response to requests with the sendFileWithDBMethods method
+###Example: BUILD OUT THE DB AND SERVER FOR A SOCIAL MEDIA APP WITH USERS AND MESSAGES
+	Require the library:
+	'-var dbHelper = require("superfastmongoapp")'
+	Set up the schema by calling the createSchema method
+	-dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}},{User:["Message"]});
+	-The first argument to schema should be an object. Keys are the names of tables you want created, values are examples of the kinds of objects that table should hold
+	-To create a User table with a name column you would run dbHelper.createSchema({User:{name:"Bobby"}})
+	Your server will automatically have endpoints that CREATE READ UPDATE and DELETE the models you created
+	-Make a get request to the endpoint /getAllMessages to get all messages from your server
+	-Make a post request to the endpoint /getSpecificMessage to get a specific Message
+	-Any html files you serve from your server with the "sendFilewithDBMethods" method on the helper automatically has helper functions available to CRUD any endpoints:
+	-Example: In your express server, serve all files in response to requests with the sendFileWithDBMethods method
 
 app.get("/dbtest",function(req,res){
 	dbHelper.sendFileWithDBMethods(__dirname + "/test.html",res);

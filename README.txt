@@ -1,8 +1,4 @@
-!!!!
 
-SUPERFASTMONGOEXPRESS: Abstract all the boilerplate needed to set up an express-mongo server into a single line of code
-
-!!!!!
 Superfastmongoexpress sets up your mongoDB tables--and an Express server that lets you manipulate the documents in your tables from your html code-- in a single line of Express code
 	-Builds tables based on a simple schema definition
 	-Sets up endpoints on an Express server to CRUD the documents in your tables

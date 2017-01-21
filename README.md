@@ -26,13 +26,16 @@ dbHelper.createSchema({User:{name:"Bobby"}})
 
 Your server will automatically have endpoints that CREATE READ UPDATE and DELETE the models you created
 
+```js
 -Make a get request to the endpoint /getAllMessages to get all messages from your server
 
 -Make a post request to the endpoint /getSpecificMessage to get a specific Message
 
 -Any html files you serve from your server with the "sendFilewithDBMethods" method on the helper automatically has helper functions available to CRUD any endpoints:
+```
 
 Example: In your express server, serve all files in response to requests with the sendFileWithDBMethods method
+
 ```js
 app.get("/dbtest",function(req,res){
 dbHelper.sendFileWithDBMethods(__dirname + "/test.html",res);
@@ -42,8 +45,9 @@ dbHelper.sendFileWithDBMethods(__dirname + "/test.html",res);
 The method takes the html file as its first argument, and the response as its second
 
 In your html files, you now have a helper to CRUD every entity you created. The helpers are on a globally defined object called "db"
-Example html code to add a message from the client side:
+
 ```html
+Example html code to add a message from the client side:
 <html>
 <head>
 <script>
@@ -84,20 +88,20 @@ db.updatemodelName(object with properties 'find' and 'change') -> updates single
 
 
 -To set up an app follow these 7 steps
-1) npm install express and create an express app instance
+1. npm install express and create an express app instance
 ```js
 var express = require("express");
 var app = express();
 ```
-2) npm install "mongoose" and connect your mongoose instance to your mongo server
+2. npm install "mongoose" and connect your mongoose instance to your mongo server
 ```js
 mongoose.connect('mongodb://localhost/test');
 ```
-3) Create the helper by requiring this library: 
+3. Create the helper by requiring this library: 
 ```js
 var helper =  require("superfastmongoExpresssetup");
 ```
-4) Connect the helper to your express app by inserting the app object, the port your app will listen on, and (optionally) the IP address of the machine that will host your app
+4. Connect the helper to your express app by inserting the app object, the port your app will listen on, and (optionally) the IP address of the machine that will host your app
 -with IP address: 
 ```js
 helper(app,port,"10.8.25.40");
@@ -110,11 +114,11 @@ Note: If you are deploying your app you must insert the ip address of the machin
 
 SuperfastexpressmongoApp needs your IP address because it is going to insert helper methods into the html files you serve from your express server.
 
-5) Create a new dbHelper by attaching your mongoose instance to the helper
+5. Create a new dbHelper by attaching your mongoose instance to the helper
 ```js
 var dbHelper = helper.addDBconnection(mongoose);
 ```
-6)Create a schema for your app by using the createSchema method. This function establishes a mongoDB schema based on a simple command. The first argument to the function sets up the entities you want in your schema: pass an object, where each key is the name of the table you want in your schema, and each value is a (nested) object and an example of the kinds of objects you want that table to hold.
+6.Create a schema for your app by using the createSchema method. This function establishes a mongoDB schema based on a simple command. The first argument to the function sets up the entities you want in your schema: pass an object, where each key is the name of the table you want in your schema, and each value is a (nested) object and an example of the kinds of objects you want that table to hold.
 
 Example:
 Create a users table and a messages table, where Users have a name and messages have a message and a time.
@@ -157,7 +161,7 @@ This way each submessage will have reference to both the User who posted it and 
 
 See below to see how to post documents to tables that have relationships to other tables.
 
-7)That's it. When you run your server, the helper will create your schema, and create endpoints to Create, Read, Update and Delete the documents in each table you created. 
+7.That's it. When you run your server, the helper will create your schema, and create endpoints to Create, Read, Update and Delete the documents in each table you created. 
 
 You can also serve files in your express app using the db.sendFileWithDBMethods method to make manipulating your database from your client side code extremely easy. 
 

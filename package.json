@@ -1,6 +1,6 @@
 {
   "name": "superfastmongoexpress",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Abstract all the boilerplate needed to set up an express-mongo server into a single line of code",
   "main": "main.js",
   "dependencies": {

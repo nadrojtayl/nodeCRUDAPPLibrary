@@ -1,5 +1,5 @@
 
-###superfastmongooserest sets up your mongoDB tables,ReST endpoints to manipulate your tables, and client side helpers to manipulate your tables -- in a single line of Express code
+###superfastmongooseexpress sets up your mongoDB tables,ReST endpoints to manipulate your tables, and client side helpers to manipulate your tables -- in a single line of Express code
 
 1. Builds tables based on a simple schema definition
 2. Sets up endpoints on an Express server to CRUD the documents in your tables

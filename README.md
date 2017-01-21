@@ -1,5 +1,6 @@
 
-###Superfastmongoexpress sets up your mongoDB tables--and an Express server that lets you manipulate the documents in your tables from your html code-- in a single line of Express code
+###superfastmongooserest sets up your mongoDB tables,ReST endpoints to manipulate your tables, and client side helpers to manipulate your tables -- in a single line of Express code
+
 1. Builds tables based on a simple schema definition
 2. Sets up endpoints on an Express server to CRUD the documents in your tables
 3. Uses server side scripting to set up helpers that CRUD your new mongo entities client-side
@@ -81,7 +82,7 @@ db.getSpecificmodelName(object) // -> gets documents matching object from table
 
 db.updatemodelName(object with properties 'find' and 'change') // -> updates single document matching object assigned to "find" to match object assigned to "change"
 	(Ex: updateUser(find:{name:"Jerry"},change:{name:"Bob"})))
-	
+
 ```
 
 

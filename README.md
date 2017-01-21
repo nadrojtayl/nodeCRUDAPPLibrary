@@ -67,15 +67,15 @@ Focus on your client side code because DB and server setup is done
 Here's the full list of all client-side helpers available to you (Replace "modelName" with the name of any of the models you created during schema setup):
 
 ```js
-db.addmodelName(object) -> adds document to table 
+db.addmodelName(object) // -> adds document to table 
 (Ex: addUser({name:"Jerry"}))
-db.deletemodelName(object) -> deletes document from table 
+db.deletemodelName(object) //-> deletes document from table 
 	(Ex: deleteUser({name:"Jerry"}))
-db.getAllmodelNames() -> gets all documents from table 
+db.getAllmodelNames() // -> gets all documents from table 
 (Ex: getAllUsers())
-db.getSpecificmodelName(object) -> gets documents matching object from table
+db.getSpecificmodelName(object) // -> gets documents matching object from table
 (Ex: getSpecificUser({name:"Jerry"}))
-db.updatemodelName(object with properties 'find' and 'change') -> updates single document matching object assigned to "find" to match object assigned to "change"
+db.updatemodelName(object with properties 'find' and 'change') // -> updates single document matching object assigned to "find" to match object assigned to "change"
 	(Ex: updateUser(find:{name:"Jerry"},change:{name:"Bob"})))
 ```
 
@@ -88,20 +88,20 @@ db.updatemodelName(object with properties 'find' and 'change') -> updates single
 
 
 -To set up an app follow these 7 steps
-1. npm install express and create an express app instance
+1.npm install express and create an express app instance
 ```js
 var express = require("express");
 var app = express();
 ```
-2. npm install "mongoose" and connect your mongoose instance to your mongo server
+2.npm install "mongoose" and connect your mongoose instance to your mongo server
 ```js
 mongoose.connect('mongodb://localhost/test');
 ```
-3. Create the helper by requiring this library: 
+3.Create the helper by requiring this library: 
 ```js
 var helper =  require("superfastmongoExpresssetup");
 ```
-4. Connect the helper to your express app by inserting the app object, the port your app will listen on, and (optionally) the IP address of the machine that will host your app
+4.Connect the helper to your express app by inserting the app object, the port your app will listen on, and (optionally) the IP address of the machine that will host your app
 -with IP address: 
 ```js
 helper(app,port,"10.8.25.40");
@@ -114,22 +114,23 @@ Note: If you are deploying your app you must insert the ip address of the machin
 
 SuperfastexpressmongoApp needs your IP address because it is going to insert helper methods into the html files you serve from your express server.
 
-5. Create a new dbHelper by attaching your mongoose instance to the helper
+5.Create a new dbHelper by attaching your mongoose instance to the helper
 ```js
 var dbHelper = helper.addDBconnection(mongoose);
 ```
+
 6.Create a schema for your app by using the createSchema method. This function establishes a mongoDB schema based on a simple command. The first argument to the function sets up the entities you want in your schema: pass an object, where each key is the name of the table you want in your schema, and each value is a (nested) object and an example of the kinds of objects you want that table to hold.
 
 Example:
 Create a users table and a messages table, where Users have a name and messages have a message and a time.
 ```js
 dbHelper.createSchema({
-Message:{time:"10 AM",message:"This is an example"},
-User:{name:"Brian"}
+	Message: {time:"10 AM",message:"This is an example"},
+	User: {name:"Brian"}
 });
 ```
 
-FOREIGN KEYS: Use the (optional) second argument to createSchema to establish relationships between your tables. You do not need to specify foreignkeys or relationships in the first argument. For the second argument, input an object, where each key is the name of a table, and each value is an array containing the names of the other tables you want it to have a one to many connection to.
+####FOREIGN KEYS: Use the (optional) second argument to createSchema to establish relationships between your tables. You do not need to specify foreignkeys or relationships in the first argument. For the second argument, input an object, where each key is the name of a table, and each value is an array containing the names of the other tables you want it to have a one to many connection to.
 
 For example, if your app has Users and messages, each User probably has many Messages. You may want to establish a relationship between the User and Messages table so you can easily find all messages from a certain User. In Mongoose, you accomplish this by putting a foreign key on each message that represents the id of the User that posted the message.
 
@@ -137,7 +138,9 @@ Its very easy to accomplish this using this library. If you want each Message to
 
 ```js
 var schema = {Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}};
+
 var relationships = {User:["Message"]}
+
 dbHelper.createSchema(schema,relationships);
 ```
 As stated, in the relationships object, make a key for every table that you want to have a one to many relationship with another table. The value for that key should be an array containing the names, as strings, of all tables that the key table should have a relationship to.
@@ -145,14 +148,14 @@ As stated, in the relationships object, make a key for every table that you want
 If you wanted users to be able to post submessages in response to messages, you might make your schema like this.
 ```js
 var schema = {
-Message:{user:"Mike",message:"I am a dog"},
-User:{name:"Mike"},
-subMessage:{message:"This is a sub-comment"}
+	Message:{user:"Mike",message:"I am a dog"},
+	User:{name:"Mike"},
+	subMessage:{message:"This is a sub-comment"}
 };
 
 var relationships = {
-User:["Message","subMessage"],
-Message:["subMessage"]
+	User:["Message","subMessage"],
+	Message:["subMessage"]
 }
 
 dbHelper.createSchema(schema,relationships);
@@ -172,21 +175,26 @@ Example of serving a file using sendFileWithDBMethods:
 
 ```js
 var dbHelper = require("superfastmongoapp")
+
 var mongoose = require("mongoose");
+
 mongoose.connect('mongodb://localhost/test3');
+
 var dbHelper = helper.addDBconnection(mongoose);
+
 var schema = {
-User:{name:"Mike"},
-Message:{user:"Mike",message:"I am a dog"},
-subMessage:{name:"Brian",message:"This is a test"
+	User:{name:"Mike"},
+	Message:{user:"Mike",message:"I am a dog"},
+	subMessage:{name:"Brian",message:"This is a test"
 };
+
 var relationships = {User:["Message","subMessage"],Message:["subMessage"]};
 
 dbHelper.createSchema(schema,relationships);
 
 
 app.get("/",function(req,res){
-dbHelper.sendFileWithDBMethods(__dirname + "/homepage.html",res);
+	dbHelper.sendFileWithDBMethods(__dirname + "/homepage.html",res);
 })
 ```
 
@@ -197,16 +205,16 @@ Then, in test.html, you will have access to a bunch of helper functions on an ob
 
 ```html
 <html>
-<head>
-<script>
-    db.addMessage({user:Ben,message:"This is an example"})
-    //The above code posts to your db
-    db.getAllMessages({});
-    //This will return all the messages that have been posted
-<script>
-</head>
-<body>
-</body>
+	<head>
+		<script>
+		    db.addMessage({user:Ben,message:"This is an example"})
+		    	//The above code posts to your db
+		    db.getAllMessages({});
+		    	//This will return all the messages that have been posted
+		<script>
+	</head>
+	<body>
+	</body>
 </html>
 ```
 
@@ -214,37 +222,41 @@ You could do something like this to allow your user to send a message by enterin
 
 ```html
 <html>
-<head>
+	<head>
 
-</head>
-<body>
-<input id="message"></input>
-<button onclick = "postMessage()">Add message</button>
-<script>
-function postMessage(){
-//get message using jquery
-var messageString = $("#message").text()
+	</head>
+	<body>
+		<input id="message"></input>
+		<button onclick = "postMessage()">Add message</button>
+		<script>
+			function postMessage(){
+				//get message using jquery
+				var messageString = $("#message").text()
 
-//post using db helper
-db.addMessage({user:"Testuser",message:messageString})
-}
-<script>
-</body>
+				//post using db helper
+				db.addMessage({user:"Testuser",message:messageString})
+			}
+		<script>
+	</body>
 </html>
 ```
 
 In your html files, the helpers for each table will be available on an object called "db." Here's the full list of helper functions. You will have one of these function for each table (replace [tableName] with the name of your table) you created:
 
 ```js
-db.add[tableName](object) -> adds document to table 
-(Ex: addUser({name:"Jerry"}))
-db.delete[tableName](object) -> deletes document from table 
+db.add[tableName](object) // -> adds document to table 
+	(Ex: addUser({name:"Jerry"}))
+
+db.delete[tableName](object) // -> deletes document from table 
 	(Ex: deleteUser({name:"Jerry"}))
-db.getAll[tableName]s() -> gets all documents from table 
-(Ex: getAllUsers())
-db.getSpecific[tableName](object) -> gets documents matching object from table
-(Ex: getSpecificUser({name:"Jerry"}))
-db.update[tableName](object with properties 'find' and 'change') -> updates single document matching object assigned to "find" to match object assigned to "change"
+
+db.getAll[tableName]s() // -> gets all documents from table 
+	(Ex: getAllUsers())
+
+db.getSpecific[tableName](object) // -> gets documents matching object from table
+	(Ex: getSpecificUser({name:"Jerry"}))
+
+db.update[tableName](object with properties 'find' and 'change') // -> updates single document matching object assigned to "find" to match object assigned to "change"
 	(Ex: updateUser(find:{name:"Jerry"},change:{name:"Bob"})))
 ```
 
@@ -257,7 +269,7 @@ This method is called "db.add[tableName]for[relatedTableName]"
 For the example above, if you created a Users table and a Messages table, the function to add a Message for a certain User would be called
 
 ```js
-db.addMessageforUser
+	db.addMessageforUser
 ``
 
 The function takes as an argument an object with two keys:
@@ -268,32 +280,33 @@ toPost: An object representing the new document to add to the table
 
 So, for example, to post a new Message to the Messages table associated with the User Ben, you do:
 ```html
-<script>
-var rf = {User:{name:"Jordan"}}
-var newmodel = {user:"Jordan",message:"This is an example"};
+	<script>
+		var rf = {User:{name:"Jordan"}}
 
-db.addMessageforUser({relatedInfo:rf,toPost:newModel});
-</script>
+		var newmodel = {user:"Jordan",message:"This is an example"};
+
+		db.addMessageforUser({relatedInfo:rf,toPost:newModel});
+	</script>
 ```
 
 If the table is related to more than one table, than the method is called db.add[tableName]for[relatedTable1]and[relatedTable2]and[relatedTable3]...
 
 So, if you have a subMessage table, where each subMessage is associated with a certain User and a Message, the client side function to add a subMessage is called.
 ```js
-db.addsubMessageforUserandMessage
+	db.addsubMessageforUserandMessage
 ```
 And to add a submessage you could run this code
 ```html
-<script>
-var relatedUser = {User:{name:"Jordan"}}
-var relatedMessage = {user:"Jordan",message:"This is the main message"}
-var newsubComment = {user:"Jordan",message:"This is an example"};
+	<script>
+		var relatedUser = {User:{name:"Jordan"}}
+		var relatedMessage = {user:"Jordan",message:"This is the main message"}
+		var newsubComment = {user:"Jordan",message:"This is an example"};
 
-db.addsubMessageforUserandMessage({
-	relatedInfo{User:relatedUser,Message:relatedMessage},
-	toPost:newsubComment
-})
-</script>
+		db.addsubMessageforUserandMessage({
+			relatedInfo{User:relatedUser,Message:relatedMessage},
+			toPost:newsubComment
+		})
+	</script>
 ```
 
 To get all the documents in a table related to a document in another table,	you need to get the mongoID (always called _id) of the document from one table using the getSpecific[tableName] function, and then get all the documents from another table that have that ID as their _[tableName] property.	
@@ -302,14 +315,14 @@ For example, to get all the Messages a specific User posted, you would:
 
 1)Find that user's ID using getSpecificUser
 ```js
-//ex: db.getSpecificUser({name:Jordan}) -> [{name:Jordan,_id:"1234"}];
-// var id = db.getSpecificUser({name:Jordan})._id;
+	//ex: db.getSpecificUser({name:Jordan}) -> [{name:Jordan,_id:"1234"}];
+	// var id = db.getSpecificUser({name:Jordan})._id;
 ```
 
 2)Use getSpecificMessage to find Messages who's _User property matches that id
 
 ```js
-//db.getSpecificMessage({_User:id}) -> All messages posted by Jordan
+	//db.getSpecificMessage({_User:id}) -> All messages posted by Jordan
 ```
 
 Documents in a table in a many to one relationship with another table--for example "relatedTable" will always have a property called _[relatedTableName]. That's what you use to filter for documents related to a specific document in the relatedTable.
@@ -321,13 +334,19 @@ At any point, from your express side code you can run the printHelper method to 
 ```js
 //Example:
 var mongoose = require("mongoose");
+
 mongoose.connect('mongodb://localhost/test3');
+
 var db = mongoose.connection;
 
 var helper =  require(__dirname + "/APIandDBsetup.js");
+
 helper = new helper(app,port);
+
 var dbHelper = helper.addDBconnection(mongoose);
+
 dbHelper.printHelpers();
+
 //the above will print all the helpers
 ```
 
@@ -375,56 +394,56 @@ app.listen(port);
 **html code
 
 <html>
-<head>
-	<script
-  src="https://code.jquery.com/jquery-3.1.1.js"
-  integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
-  crossorigin="anonymous"></script>
-  <script>
+	<head>
+		<script
+	  src="https://code.jquery.com/jquery-3.1.1.js"
+	  integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+	  crossorigin="anonymous"></script>
+	  <script>
 
-  </script>
-</head>
-<body>
-	<div>
-		<label>Select User</label>
-		<select id ="selector">
-		</select>
-	</div>
-	<div>
-		<label> Send Message </label>
-		<input type="text" id="message"></input>
-		<button onclick = "send()">Send</button>
-		<div id="messageHolder"></div>
-		<button onclick = "refresh()">Refresh Messages</button>
-	</div>
-	<script>
-		
-		//the code block below uses getAllUsers to append all users to a dropdown list so that the user can select what user they want to post as
-		db.getAllUsers().forEach(function(user){
-			var userContainer = $("#selector");
-			var newOpt = $("<option></option>")
+	  </script>
+	</head>
+	<body>
+		<div>
+			<label>Select User</label>
+			<select id ="selector">
+			</select>
+		</div>
+		<div>
+			<label> Send Message </label>
+			<input type="text" id="message"></input>
+			<button onclick = "send()">Send</button>
+			<div id="messageHolder"></div>
+			<button onclick = "refresh()">Refresh Messages</button>
+		</div>
+		<script>
+			
+			//the code block below uses getAllUsers to append all users to a dropdown list so that the user can select what user they want to post as
+			db.getAllUsers().forEach(function(user){
+				var userContainer = $("#selector");
+				var newOpt = $("<option></option>")
 
-			userContainer.append("<option val ="+ user.name + ">"+user.name+ "</option>")
-		})
-
-		//the 'send' function below uses the addMessageforUser helper function to add a new message for the selected user into the database
-		function send(){
-			var user = $("#selector").val();
-			var messagetext = $("#message").val();
-			db.addMessageforUser({relatedInfo:{User:{name:user}},toPost:{user:user,message:messagetext}});
-		}
-
-		//the 'refresh' function uses the getAllMessages function to get All the messages in the database
-		//uses jquery to append to a div on the page
-		function refresh(){
-			var messagecontainer = $("#messageHolder")
-			messagecontainer.empty();
-			db.getAllMessages().forEach(function(messageObj){
-				var toAdd = $("<p>"+ messageObj.user+" :"+ messageObj.message + "</p>")
-				messagecontainer.append(toAdd);
+				userContainer.append("<option val ="+ user.name + ">"+user.name+ "</option>")
 			})
-		}
-	</script>
-</body>
+
+			//the 'send' function below uses the addMessageforUser helper function to add a new message for the selected user into the database
+			function send(){
+				var user = $("#selector").val();
+				var messagetext = $("#message").val();
+				db.addMessageforUser({relatedInfo:{User:{name:user}},toPost:{user:user,message:messagetext}});
+			}
+
+			//the 'refresh' function uses the getAllMessages function to get All the messages in the database
+			//uses jquery to append to a div on the page
+			function refresh(){
+				var messagecontainer = $("#messageHolder")
+				messagecontainer.empty();
+				db.getAllMessages().forEach(function(messageObj){
+					var toAdd = $("<p>"+ messageObj.user+" :"+ messageObj.message + "</p>")
+					messagecontainer.append(toAdd);
+				})
+			}
+		</script>
+	</body>
 </html>
 ```

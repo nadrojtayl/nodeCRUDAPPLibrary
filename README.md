@@ -136,7 +136,9 @@ dbHelper.createSchema({
 });
 ```
 
-####FOREIGN KEYS: Use the (optional) second argument to createSchema to establish relationships between your tables. You do not need to specify foreignkeys or relationships in the first argument. For the second argument, input an object, where each key is the name of a table, and each value is an array containing the names of the other tables you want it to have a one to many connection to.
+####FOREIGN KEYS: 
+
+Use the (optional) second argument to createSchema to establish relationships between your tables. You do not need to specify foreignkeys or relationships in the first argument. For the second argument, input an object, where each key is the name of a table, and each value is an array containing the names of the other tables you want it to have a one to many connection to.
 
 For example, if your app has Users and messages, each User probably has many Messages. You may want to establish a relationship between the User and Messages table so you can easily find all messages from a certain User. In Mongoose, you accomplish this by putting a foreign key on each message that represents the id of the User that posted the message.
 

@@ -38,7 +38,7 @@ Example: In your express server, serve all files in response to requests with th
 
 ```js
 app.get("/dbtest",function(req,res){
-dbHelper.sendFileWithDBMethods(__dirname + "/test.html",res);
+	dbHelper.sendFileWithDBMethods(__dirname + "/test.html",res);
 })
 ```
 
@@ -69,14 +69,19 @@ Here's the full list of all client-side helpers available to you (Replace "model
 ```js
 db.addmodelName(object) // -> adds document to table 
 (Ex: addUser({name:"Jerry"}))
+
 db.deletemodelName(object) //-> deletes document from table 
 	(Ex: deleteUser({name:"Jerry"}))
+
 db.getAllmodelNames() // -> gets all documents from table 
 (Ex: getAllUsers())
+
 db.getSpecificmodelName(object) // -> gets documents matching object from table
 (Ex: getSpecificUser({name:"Jerry"}))
+
 db.updatemodelName(object with properties 'find' and 'change') // -> updates single document matching object assigned to "find" to match object assigned to "change"
 	(Ex: updateUser(find:{name:"Jerry"},change:{name:"Bob"})))
+	
 ```
 
 

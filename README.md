@@ -1,54 +1,62 @@
 
-###superfastmongooserest sets up your mongoDB tables,ReST endpoints to manipulate your tables, and client side helpers to manipulate your tables -- in a single line of Express code
+###superfastmongooseexpress sets up your mongoDB tables, REST endpoints to manipulate your tables, and client side helpers to manipulate your tables -- in a single line of Express code
 
 1. Builds tables based on a simple schema definition
-2. Sets up endpoints on an Express server to CRUD the documents in your tables
-3. Uses server side scripting to set up helpers that CRUD your new mongo entities client-side
+2. Sets up REST API endpoints on an Express server to CRUD the documents in your tables
+3. Uses server side rendering to insert helpers that manipulate your mongoDB tables into any html files you serve from your Express server
 
-###Example: Build out the mongo db and server for a social media app with users and messages
+###Example: To build out the mongo db and server for a social media app with users and messages
 
 Require the library:
 
 ```js
--var dbHelper = require("superfastmongoapp")
+-var dbHelper = require("superfastmongooseexpress")
 ```
 
-Set up the schema by calling the createSchema method
+Set up your mongoose tables by calling the super simple createSchema method
 ```js
 dbHelper.createSchema({Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}},{User:["Message"]});
 ```
 
-(The first argument to schema should be an object. Keys are the names of tables you want created, values are examples of the kinds of objects that table should hold)
+(CreateSchema takes two arguments. The first argument is an object describing the mongoose tables you want for your project. Keys are the names of tables you want created, values are examples of the kinds of documents that table should hold, represented as objects)
 
-To create a User table with a name column you would run 
+For example, to create a User table where every user has a name you would run:
 ```js
 dbHelper.createSchema({User:{name:"Bobby"}})
 ```
 
-Your server will automatically have endpoints that CREATE READ UPDATE and DELETE the models you created
+The optional second argument to createSchema specifies any relationships you want between your tables. Its described in greater depth later on.
+
+When you run createSchema, the library will automatically set up REST endpoints on your Express server that CREATE READ UPDATE and DELETE the documents in the tables you created
 
 ```js
--Make a get request to the endpoint /getAllMessages to get all messages from your server
+-Make a get request to the endpoint /getAllUsers to get all users from your server
 
--Make a post request to the endpoint /getSpecificMessage to get a specific Message
-
--Any html files you serve from your server with the "sendFilewithDBMethods" method on the helper automatically has helper functions available to CRUD any endpoints:
+-Make a post request to the endpoint /getSpecificUser to get a specific user
 ```
 
-Example: In your express server, serve all files in response to requests with the sendFileWithDBMethods method
+** In addition to setting up REST endpoints, the library will allow you to insert helpers into your html code to manipulate your mongoDB tables. This saves you all the trouble of writing HTTP requests in your client side code to insert,edit or remove documents  **
+
+-To insert helpers that will allow you to manipulate your tables into your html, serve your html files from your server using the "sendFilewithDBMethods" method on the variable name you gave the library:
+
+```
+
+Example: In your express server, serve your homepage html with the sendFileWithDBMethods method:
 
 ```js
-app.get("/dbtest",function(req,res){
-	dbHelper.sendFileWithDBMethods(__dirname + "/test.html",res);
+var app = require("express")();
+
+app.get("/",function(req,res){
+	dbHelper.sendFileWithDBMethods(__dirname + "/index.html",res);
 })
 ```
 
-The method takes the html file as its first argument, and the response as its second
+The method takes the path to your html file as its first argument, and the Express response object as its second argument.
 
-In your html files, you now have a helper to CRUD every entity you created. The helpers are on a globally defined object called "db"
+In your html files, you now have access to a bunch of helper to manipulate your mongo tables. For each table, there is a helper for getting, creating, editing, and deleting documents. The helpers are on a globally defined object called "db" and are inserted into the html you served in a script tag after the head tag
 
 ```html
-Example html code to add a message from the client side:
+Example html code to add a message to your messages table from your html:
 <html>
 <head>
 <script>
@@ -56,29 +64,29 @@ Example html code to add a message from the client side:
     //The above code posts to your db
     db.getAllMessages({});
     //This will return all the messages that have been posted
-<script>
+</script>
 </head>
 <body>
 </body>
 </html>
 ```
 
-Focus on your client side code because DB and server setup is done
+Now you can focus on your client side code because DB and server setup is done
 
-Here's the full list of all client-side helpers available to you (Replace "modelName" with the name of any of the models you created during schema setup):
+Heres the full list of all client-side helpers available to you (Replace "modelName" with the exact name of one of the tables you created during schema setup):
 
 ```js
 db.addmodelName(object) // -> adds document to table 
-(Ex: addUser({name:"Jerry"}))
+	(Ex: addUser({name:"Jerry"}))
 
 db.deletemodelName(object) //-> deletes document from table 
 	(Ex: deleteUser({name:"Jerry"}))
 
 db.getAllmodelNames() // -> gets all documents from table 
-(Ex: getAllUsers())
+	(Ex: getAllUsers())
 
 db.getSpecificmodelName(object) // -> gets documents matching object from table
-(Ex: getSpecificUser({name:"Jerry"}))
+	(Ex: getSpecificUser({name:"Jerry"}))
 
 db.updatemodelName(object with properties 'find' and 'change') // -> updates single document matching object assigned to "find" to match object assigned to "change"
 	(Ex: updateUser(find:{name:"Jerry"},change:{name:"Bob"})))
@@ -86,7 +94,7 @@ db.updatemodelName(object with properties 'find' and 'change') // -> updates sin
 ```
 
 
-###LONGER INSTRUCTIONS:
+###LONGER INSTRUCTIONS FOR HOW TO USE THIS LIBRARY:
 **Note** If you want to know how to add foreign keys or relationships between tables, skip to the foreign keys section on line 95
 
 

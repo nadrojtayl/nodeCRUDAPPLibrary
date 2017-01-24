@@ -139,10 +139,13 @@ SuperfastexpressmongoApp needs your IP address to insert helper methods into the
 var dbHelper = helper.addDBconnection(mongoose);
 ```
 
-6.Create a schema for your app by using the createSchema method. This function establishes a mongoDB schema based on a simple command. The first argument to the function sets up the entities you want in your schema: pass an object, where each key is the name of the table you want in your schema, and each value is a (nested) object and an example of the kinds of objects you want that table to hold.
+6.Create your mongoDB tables by using the createSchema method. This function establishes a mongoDB schema based on a simple command. The first argument to the function describes the tables you want in your schema: you should pass an object, where each key is the name of the table you want in your schema, and each value is a (nested) object that is an example of the kinds of documents you want that table to hold.
+
+Superfastmongoexpress will read the types of objects you want stored in the columns in your tables and use that information to set up new mongo tables
 
 Example:
 Create a users table and a messages table, where Users have a name and messages have a message and a time.
+
 ```js
 dbHelper.createSchema({
 	Message: {time:"10 AM",message:"This is an example"},
@@ -152,11 +155,11 @@ dbHelper.createSchema({
 
 ####FOREIGN KEYS: 
 
-Use the (optional) second argument to createSchema to establish relationships between your tables. You do not need to specify foreignkeys or relationships in the first argument. For the second argument, input an object, where each key is the name of a table, and each value is an array containing the names of the other tables you want it to have a one to many connection to.
+Use the (optional) second argument to createSchema to establish relationships between your tables. You do not need to specify foreignkeys or relationships in the first argument. For the second argument, input an object, where each key is the name of one of the table you set up, and the value is an array containing the names of the other tables you want that table to have a one to many connection to.
 
-For example, if your app has Users and messages, each User probably has many Messages. You may want to establish a relationship between the User and Messages table so you can easily find all messages from a certain User. In Mongoose, you accomplish this by putting a foreign key on each message that represents the id of the User that posted the message.
+For example, if your app has Users and Messages, each User probably has many Messages. You may want to establish a relationship between the User and Messages table, so you can easily find all messages from a certain User. In Mongoose, you accomplish this by putting a foreign key on each message that represents the id of the User that posted the message.
 
-Its very easy to accomplish this using this library. If you want each Message to contain an ID for the user who wrote the message, create your schema like this:
+Its very easy to accomplish this using superfastmongoexpress. If you want each Message to contain an ID for the user who wrote the message, create your schema like this:
 
 ```js
 var schema = {Message:{user:"Mike",message:"I am a dog"},User:{name:"Mike"}};
@@ -182,7 +185,7 @@ var relationships = {
 
 dbHelper.createSchema(schema,relationships);
 ```
-This way each submessage will have reference to both the User who posted it and the message it is under.
+This way each submessage will have reference to both the User who posted it and the message it is a response to.
 
 See below to see how to post documents to tables that have relationships to other tables.
 
@@ -190,8 +193,7 @@ See below to see how to post documents to tables that have relationships to othe
 
 You can also serve files in your express app using the db.sendFileWithDBMethods method to make manipulating your database from your client side code extremely easy. 
 
-**
-When you serve your files using db.sendFileWithDBMethods, you will have access in your html code to a set of helpers that-- for each of your new tables-- will CREATE, READ, UPDATE AND DELETE documents in that table**:
+Serve your files using db.sendFileWithDBMethods to insert helpers into your html code toCREATE, READ, UPDATE AND DELETE the documents in the tables you created.
 
 Example of serving a file using sendFileWithDBMethods:
 
@@ -222,7 +224,7 @@ app.get("/",function(req,res){
 
 The sendFileWithDBMethods function takes the absolute path to an html file as its first argument, and the response as its second.
 
-Then, in test.html, you will have access to a bunch of helper functions on an object called "db" to CRUD every document in your table. For example, to add Messages to your database, you could write client code like this:
+Then, in test.html, you will have access to a bunch of helper functions on an object called "db" to manipulate documents in all your tables. For example, to add Messages to your database, you could write client code like this:
 
 
 ```html
@@ -233,7 +235,7 @@ Then, in test.html, you will have access to a bunch of helper functions on an ob
 		    	//The above code posts to your db
 		    db.getAllMessages({});
 		    	//This will return all the messages that have been posted
-		<script>
+		</script>
 	</head>
 	<body>
 	</body>
@@ -284,15 +286,11 @@ db.update[tableName](object with properties 'find' and 'change') // -> updates s
 
 INSERTING TO TABLES WITH FOREIGN KEYS
 
-If you specified a table as having a many to one relationship to another table, the library provides you an extra helper for that test to add a new document to that table while specifying what documents in other tables it should be associated with. For example, if you created a Messages table for messages posted by Users, you need a way to post your Messages while specifiying what User is posting it.
+If you specified a table as having a many to one relationship to another table, the library provides you an extra helper to add a new document to that table while specifying what documents in other tables it should be associated with. For example, if you created a Messages table for messages posted by Users, you need a way to post your Messages while specifiying what User is posting it.
 
 This method is called "db.add[tableName]for[relatedTableName]"
 
-For the example above, if you created a Users table and a Messages table, the function to add a Message for a certain User would be called
-
-```js
-	db.addMessageforUser
-``
+For the example above, if you created a Users table and a Messages table, the function to add a Message for a certain User would be called db.addMessageforUser
 
 The function takes as an argument an object with two keys:
 
@@ -301,6 +299,7 @@ relatedInfo: An object whose keys are the names of the tables your table is rela
 toPost: An object representing the new document to add to the table
 
 So, for example, to post a new Message to the Messages table associated with the User Ben, you do:
+
 ```html
 	<script>
 		var rf = {User:{name:"Jordan"}}
@@ -347,9 +346,9 @@ For example, to get all the Messages a specific User posted, you would:
 	//db.getSpecificMessage({_User:id}) -> All messages posted by Jordan
 ```
 
-Documents in a table in a many to one relationship with another table--for example "relatedTable" will always have a property called _[relatedTableName]. That's what you use to filter for documents related to a specific document in the relatedTable.
+Documents in a table in a many to one relationship with another table--for example "relatedTable" will always have a property called _[relatedTableName]. That's what you use to filter for documents related to a specific document.
 
-For example, if you have an ingredients table where each ingredient is related to a recipe, the recipe ID will be stored on a property called _Recipe on each ingredient. So to find all the ingredients in a certain Recipe you would use the same process as above, but you would getSpecificIngredient and check if _Recipe matched the id of the recipe whose ingredients you were looking for, not _User
+For example, if you have an ingredients table where each ingredient is related to a recipe, the recipe ID will be stored on a property called _Recipe on each ingredient. So to find all the ingredients in a certain Recipe you would use the same process as above, but you would getSpecificRecipe and check if _Recipe matched the id of the recipe whose ingredients you were looking for.
 
 At any point, from your express side code you can run the printHelper method to see all the helpers that will be available to you on the client side
 
@@ -373,8 +372,10 @@ dbHelper.printHelpers();
 ```
 
 
+
+//EXAMPLE OF CLIENT SIDE AND SERVER SIDE CODE TO SET UP CHAT MESSAGING APP USING SUPERFASTMONGOEXPRESS
+
 ```js
-//EXAMPLE OF CLIENT SIDE AND SERVER SIDE CODE TO SET UP CHAT MESSAGING APP USING HYPERFAST MONGO
 
 **express server side code
 

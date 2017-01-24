@@ -98,35 +98,41 @@ db.updatemodelName(object with properties 'find' and 'change') // -> updates sin
 **Note** If you want to know how to add foreign keys or relationships between tables, skip to the foreign keys section
 
 
--Many applications use an express server and Mongoose to do the simple action of allowing CRUD operations (CREATE READ UPDATE DELETE) on models in your database. This library gets rid of all the boilerplate.
+-To set up your mongoose tables, REST API, and html helpers follow these 7 steps:
 
-
--To set up an app follow these 7 steps
 1.npm install express and create an express app instance
+
 ```js
 var express = require("express");
 var app = express();
 ```
-2.npm install "mongoose" and connect your mongoose instance to your mongo server
+
+2.npm install the "mongoose" ORM and connect your mongoose instance to your mongo server
+
 ```js
 mongoose.connect('mongodb://localhost/test');
 ```
-3.Create the helper by requiring this library: 
+
+3.Require the library and assign it to a variable (e.g. "create a helper")
+
 ```js
 var helper =  require("superfastmongoExpresssetup");
 ```
+
 4.Connect the helper to your express app by inserting the app object, the port your app will listen on, and (optionally) the IP address of the machine that will host your app
 -with IP address: 
 ```js
 helper(app,port,"10.8.25.40");
 ```
--without:
+-without IP address:
+
 ```js
 helper(app,port)
 ```
-Note: If you are deploying your app you must insert the ip address of the machine it will be running on. If you're creating a test app, or running locally, its fine to leave IP blank (as the library will find your IP address on the network you are on and insert it)
 
-SuperfastexpressmongoApp needs your IP address because it is going to insert helper methods into the html files you serve from your express server.
+Note: If you are deploying your app you must insert the ip address of the machine it will be running on. If you're creating a test app, or running locally, its fine to leave IP blank (the library will find your IP address on the network you are on and insert it)
+
+SuperfastexpressmongoApp needs your IP address to insert helper methods into the html files you serve from your express server.
 
 5.Create a new dbHelper by attaching your mongoose instance to the helper
 ```js

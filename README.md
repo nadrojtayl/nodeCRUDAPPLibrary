@@ -38,21 +38,35 @@ When you run createSchema, the library will automatically set up REST endpoints 
 Here's the full list of endpoints that will be set up for your tables. Replace the name of your table with [tableName]:
 
 ```js
-app.getAll[tableName]s // -> gets all documents from tables, make a GET request
+
+site/getAll[tableName]s // -> gets all documents from tables, make a GET request
 	(Ex: http://www.testsite/getAllUsers)
 
-app.getSpecific[tableName] // -> gets documents matching object from table, make a post request. The body of your request should be an object representing the document you want returned
+site/getSpecific[tableName] // -> gets documents matching object from table, make a post request. The body of your request should be an object representing the document you want returned
 	(Ex: http://www.testsite/getSpecificUser, body of request should be {name:"Jerry"} )
 
-app.add[tableName] // -> add document to table, make a post request. The body of your request should be an object representing the new document
+site/add[tableName] // -> add document to table, make a post request. The body of your request should be an object representing the new document
 	(Ex: http://www.testsite/addUser, body of request({name:"Jerry"} )
 
-app.delete[tableName] // -> deletes document from table, make a post request
+site/add[tableName]for[relatedTableName] // -> add documents to a table that has a many to one relationship with another table, make a POST request
+
+//For example, you might have a Message Table where every message is related to a certain User in the User table.
+
+	(Ex: http://www.testsite/addMessageforUser, body of request should be an object with two properties, 'relatedInfo' and 'toPost'. toPost is an object representing the new document to insert. related Info is an object, whose keys are the names of related tables, and whose properties are objects representing the document that the new document you are inserting should be related to. The body to add a message that a certain user posted to the Messages table might look like this:
+		var userInfo = {User:{name:"Jordan"}}
+		var newmodel = {user:"Jordan",message:"This is an example"}
+		set request body to -> {relatedInfo:rf,toPost:newModel};
+	)
+
+
+site/delete[tableName] // -> deletes document from table, make a post request
 	(Ex: http://www.testsite/deleteUser, body of request {name:"Jerry"} )
 
 
-app.update[tableName](object with properties 'find' and 'change') // -> updates single document matching object assigned to "find" to match object assigned to "change"
+site/update[tableName](object with properties 'find' and 'change') // -> updates single document matching object assigned to "find" to match object assigned to "change"
 	(Ex: http://www.testsite/updateUser, body should be {find:{name:"Jerry"},change:{name:"Bob"} )
+
+
 ```
 
 ** In addition to setting up REST endpoints, the library will allow you to insert helpers into your html code to manipulate your mongoDB tables. This saves you all the trouble of writing HTTP requests in your client side code to insert,edit or remove documents  **

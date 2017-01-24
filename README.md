@@ -37,7 +37,6 @@ When you run createSchema, the library will automatically set up REST endpoints 
 
 Here's the full list of endpoints that will be set up for your tables. Replace the name of your table with [tableName]:
 
-```js
 
 site/getAll[tableName]s // -> gets all documents from tables, make a GET request
 	(Ex: http://www.testsite/getAllUsers)
@@ -67,7 +66,6 @@ site/update[tableName](object with properties 'find' and 'change') // -> updates
 	(Ex: http://www.testsite/updateUser, body should be {find:{name:"Jerry"},change:{name:"Bob"} )
 
 
-```
 
 ** In addition to setting up REST endpoints, the library will allow you to insert helpers into your html code to manipulate your mongoDB tables. This saves you all the trouble of writing HTTP requests in your client side code to insert,edit or remove documents  **
 

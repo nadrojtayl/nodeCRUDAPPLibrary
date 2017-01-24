@@ -95,7 +95,7 @@ db.updatemodelName(object with properties 'find' and 'change') // -> updates sin
 
 
 ###LONGER INSTRUCTIONS FOR HOW TO USE THIS LIBRARY:
-**Note** If you want to know how to add foreign keys or relationships between tables, skip to the foreign keys section on line 95
+**Note** If you want to know how to add foreign keys or relationships between tables, skip to the foreign keys section
 
 
 -Many applications use an express server and Mongoose to do the simple action of allowing CRUD operations (CREATE READ UPDATE DELETE) on models in your database. This library gets rid of all the boilerplate.

@@ -51,11 +51,13 @@ site/add[tableName]for[relatedTableName] // -> add documents to a table that has
 
 //For example, you might have a Message Table where every message is related to a certain User in the User table.
 
-	(Ex: http://www.testsite/addMessageforUser, body of request should be an object with two properties, 'relatedInfo' and 'toPost'. toPost is an object representing the new document to insert. related Info is an object, whose keys are the names of related tables, and whose properties are objects representing the document that the new document you are inserting should be related to. The body to add a message that a certain user posted to the Messages table might look like this:
-		var userInfo = {User:{name:"Jordan"}}
-		var newmodel = {user:"Jordan",message:"This is an example"}
-		set request body to -> {relatedInfo:rf,toPost:newModel};
-	)
+(
+Ex: http://www.testsite/addMessageforUser, body of request should be an object with two properties, 'relatedInfo' and 'toPost'. toPost is an object representing the new document to insert. related Info is an object, whose keys are the names of related tables, and whose properties are objects representing the document that the new document you are inserting should be related to. The body to add a message that a certain user posted to the Messages table might look like this:
+
+var userInfo = {User:{name:"Jordan"}}
+var newmodel = {user:"Jordan",message:"This is an example"}
+set request body to -> {relatedInfo:rf,toPost:newModel};
+)
 
 
 site/delete[tableName] // -> deletes document from table, make a post request

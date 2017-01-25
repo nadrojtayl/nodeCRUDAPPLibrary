@@ -1,6 +1,6 @@
 {
   "name": "superfastmongoexpress",
-  "version": "1.2.4",
+  "version": "1.2.6",
   "keywords":["mongodb","express","mongoose","restify","ReST","model","node"],
   "description": "Create a REST interface for mongoose models and easily manipulate your database tables in html files your serve from your express server; Handle all the boilerplate needed to set up an express-mongo server into a single line of code",
   "main": "main.js",
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nadrojtayl/nodeCRUDAPPLibrary.git"
+    "url": "https://github.com/nadrojtayl/superfastmongoexpress"
   },
   "author": "",
   "license": "ISC",
